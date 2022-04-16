@@ -25,6 +25,12 @@ export const routes = [
         path: '/admin/',
         component: require('./views/admin/Template').default,
         children: [
+            /* OPG-ovi */
+            {
+                name: 'appFamilyFarms',
+                path: 'family-farms',
+                component: require('./views/admin/familyFarms/Index').default,
+            },
             /* KORISNICI */
             {
                 name: 'appUsers',

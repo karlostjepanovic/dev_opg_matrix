@@ -1,12 +1,12 @@
 <template>
     <modal title="Brisanje korisnika" ref="modal" size="s">
-        <form method="post" @submit.prevent="remove">
+        <form method="post" @submit.prevent="deleteUser">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
+            <div class="text">Jeste li sigurni da želite obrisati odabranog korisnika?</div>
             <div class="text">
-                <div>Jeste li sigurni da želite obrisati korisnika?</div>
-                <div><strong>{{user.full_name}}</strong></div>
-                <div><strong>{{user.username ? '('+user.username+')' : ''}}</strong></div>
+                <div class="txt-bold">{{user.full_name}}</div>
+                <div class="txt-small txt-gray">{{'('+user.username+')'}}</div>
             </div>
             <div class="form-section center">
                 <button
@@ -32,7 +32,7 @@ export default {
         }
     },
     methods: {
-        remove(){
+        deleteUser(){
             this.$root.$emit('verifyOTP', () => {
                 this.loading = true;
                 axios.post("/admin/delete-user/"+this.user.id).then((response) => {

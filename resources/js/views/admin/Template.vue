@@ -2,9 +2,9 @@
     <main-template title="Upravljanje sustavom" v-if="isMounted">
         <ul class="navigation">
             <li>
-                <router-link :to="{name: 'appUsers'}"
+                <router-link :to="{name: 'appFamilyFarms'}"
                              class="navigation-tab"
-                             :class="{'active' : this.$route.name === ''}">
+                             :class="{'active' : this.$route.name === 'appFamilyFarms'}">
                     OPG-ovi
                 </router-link>
             </li>

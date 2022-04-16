@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\App\FamilyFarmController;
+use App\Http\Controllers\App\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Token\TokenController;
-use App\Http\Controllers\UserController;
 use App\Models\App\FamilyFarm;
 use App\Models\App\User;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +38,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/logged-user', function () {
         return Auth::user();
     });
-    Route::post('/verify-otp', [TokenController::class, 'check']);
 
     // OPG
     Route::post('/family-farm', function () {
@@ -46,13 +45,22 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::post('/get-available-family-farms', [FamilyFarmController::class, 'getAvailableFamilyFarms']);
 
+    /* JEDNOKRATNE LOZINKE */
+    Route::group(["prefix" => "otp"], function() {
+        Route::post('verify', [TokenController::class, 'verify']);
+        Route::post('generate', [TokenController::class, 'generate']);
+        Route::post('check', [TokenController::class, 'check']);
+    });
+
     /* ADMINISTRACIJA SUSTAVA */
     Route::group(["prefix" => "admin"], function() {
         // OPG-OVI
-        /*Route::post('/get-all-family-farms', [FamilyFarmController::class, 'getAllFamilyFarms']);
-        Route::post('/create-family-farm', [FamilyFarmController::class, 'createFamilyFarmAction']);
-        Route::post('/edit-family-farm/{id}', [FamilyFarmController::class, 'editFamilyFarmAction']);
-        Route::post('/delete-family-farm/{id}', [FamilyFarmController::class, 'deleteFamilyFarmAction']);*/
+        Route::post('get-family-farms', function () {
+            return FamilyFarm::orderBy('name')->with('owner')->get()->toArray();
+        });
+        Route::post('create-family-farm', [FamilyFarmController::class, 'createFamilyFarm']);
+        Route::post('edit-family-farm/{id}', [FamilyFarmController::class, 'editFamilyFarm']);
+        Route::post('delete-family-farm/{id}', [FamilyFarmController::class, 'deleteFamilyFarm']);
 
         // KORISNICI
         Route::post('get-users', function () {

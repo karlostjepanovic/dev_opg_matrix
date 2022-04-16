@@ -1,19 +1,19 @@
 <template>
-    <modal title="Resetiranje lozinke" ref="modal" size="s">
-        <form method="post" @submit.prevent="resetPassword">
+    <modal title="Brisanje OPG-a" ref="modal" size="s">
+        <form method="post" @submit.prevent="deleteFamilyFarm">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
+            <div class="text">Jeste li sigurni da želite obrisati odabrani OPG?</div>
             <div class="text">
-                <div>Jeste li sigurni da želite korisniku</div>
-                <div><strong>{{user.full_name}}</strong></div>
-                <div>resetirati lozinku na početnu vrijednost?</div>
+                <div class="txt-bold">{{familyFarm.name}}</div>
+                <div class="txt-small txt-gray">{{'('+familyFarm.place+')'}}</div>
             </div>
             <div class="form-section center">
                 <button
                     type="submit"
-                    class="green"
+                    class="red"
                     :disabled="loading">
-                    Resetiraj lozinku
+                    Obriši OPG
                 </button>
             </div>
         </form>
@@ -22,21 +22,21 @@
 
 <script>
 export default {
-    name: "ResetPassword",
-    props: ['user'],
+    name: "Remove",
+    props: ['familyFarm'],
     data(){
         return {
-            loading: true,
+            loading: false,
             message: null,
             errors: null
         }
     },
     methods: {
-        resetPassword(){
+        deleteFamilyFarm(){
             this.$root.$emit('verifyOTP', () => {
                 this.loading = true;
-                axios.post("/admin/reset-password/"+this.user.id).then((response) => {
-                    this.$root.$emit('getAppUsers', () => {
+                axios.post("/admin/delete-family-farm/"+this.familyFarm.id).then((response) => {
+                    this.$root.$emit('getAppFamilyFarms', () => {
                         this.$toast.success(response.data.success);
                         this.$refs.modal.close();
                     });
@@ -49,8 +49,7 @@ export default {
         }
     },
     created() {
-        if(this.user === null){
-            alert("123");
+        if(this.familyFarm === null){
             return this.$root.$emit('error');
         }
         this.loading = false;

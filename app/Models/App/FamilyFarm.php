@@ -24,6 +24,6 @@ class FamilyFarm extends Model
     // opg pripada vlasniku
     public function owner()
     {
-        return $this->belongsTo(User::class, 'user_id', 'user_id');
+        return $this->belongsTo(User::class, 'owner_id', 'id');
     }
 }

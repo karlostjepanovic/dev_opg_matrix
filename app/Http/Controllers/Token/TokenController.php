@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Token;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TokenController extends Controller
 {
-    public function generateToken()
+    public function generate()
     {
         $ga = new GoogleAuthenticator();
         $code = $ga->createSecret();
@@ -19,7 +20,7 @@ class TokenController extends Controller
         ]);
     }
 
-    public function verifyToken(Request $request)
+    public function check(Request $request)
     {
         $request->validate([
             'code'  => 'required',
@@ -36,7 +37,7 @@ class TokenController extends Controller
         }
     }
 
-    public static function check(Request $request)
+    public static function verify(Request $request)
     {
         $request->validate([
             'otp'   => 'required',
@@ -44,7 +45,10 @@ class TokenController extends Controller
         $ga = new GoogleAuthenticator();
         $result = Auth::user() && $ga->verifyCode(Auth::user()->otp_token, $request->otp, 3);
         if($result){
-            return $result;
+            Auth::user()->update([
+                'last_otp' => Carbon::now()
+            ]);
+            return true;
         }else{
             return response()->json([
                 'message' => 'Jednokratna lozinka je neispravna.'

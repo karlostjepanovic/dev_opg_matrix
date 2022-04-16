@@ -75,6 +75,10 @@
     color: var(--black);
 }
 
+.section {
+    margin-bottom: 20px;
+}
+
 .message.blue { background: var(--light-blue); border-color: var(--blue); }
 .message.red { background: var(--light-blue); border-color: var(--blue); }
 .message.yellow { background: var(--light-yellow); border-color: var(--yellow); }

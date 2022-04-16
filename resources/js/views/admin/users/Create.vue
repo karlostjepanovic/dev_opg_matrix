@@ -1,6 +1,6 @@
 <template>
     <modal title="Kreiranje novog korisnika" ref="modal" size="m">
-        <form method="post" @submit.prevent="create">
+        <form method="post" @submit.prevent="createUser">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
             <div class="form-section row">
@@ -95,23 +95,6 @@
                     <div class="error" v-if="errors && errors.phone && errors.phone[0]">{{errors.phone[0]}}</div>
                 </div>
             </div>
-            <div class="form-section row">
-                <div class="form-control">
-                    <label for="admin_role">Administrator:</label>
-                </div>
-                <div class="form-control w-7">
-                    <div class="field">
-                        <label class="toggle-switch green"
-                               :class="{'invalid' : errors && errors.admin_role}">
-                            <input type="checkbox"
-                                   id="admin_role"
-                                   v-model="formData.admin_role">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="error" v-if="errors && errors.admin_role && errors.admin_role[0]">{{errors.admin_role[0]}}</div>
-                </div>
-            </div>
             <div class="form-section center">
                 <button
                     type="submit"
@@ -137,7 +120,6 @@ export default {
                 oib: null,
                 email: null,
                 phone: null,
-                admin_role: false,
             },
             message: null,
             errors: null
@@ -151,7 +133,7 @@ export default {
                 this.formData.username = firstname+"."+lastname;
             }
         },
-        create(){
+        createUser(){
             this.loading = true;
             axios.post("/admin/create-user", this.formData).then((response) => {
                 this.$root.$emit('getAppUsers', () => {

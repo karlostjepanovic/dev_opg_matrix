@@ -1,18 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\App;
 
+use App\Http\Controllers\Controller;
 use App\Models\App\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use function response;
 
 class UserController extends Controller
 {
     /**
-     * Create new user
+     * Creating new user
      * @param Request $request
      * @return JsonResponse
      */
@@ -39,7 +44,7 @@ class UserController extends Controller
                 'admin_role' => $request->admin_role
             ]);
         }catch (QueryException $e){
-            if($e->getCode() == "23000"){
+            if($e->getCode() === "23000"){
                 return response()->json([
                     'message' => 'Korisnik s ovim korisničkim imenom ili OIB-om već postoji.'
                 ], 422);
@@ -51,7 +56,7 @@ class UserController extends Controller
     }
 
     /**
-     * Edit user
+     * Editing user
      * @param $id
      * @param Request $request
      * @return JsonResponse
@@ -65,7 +70,6 @@ class UserController extends Controller
             'oib'           => 'required|numeric|digits:11',
             'email'         => 'nullable|email',
             'phone'         => 'nullable',
-            'admin_role'    => 'bool'
         ]);
         try {
             $user = User::find($id);
@@ -76,10 +80,9 @@ class UserController extends Controller
                 'oib' => $request->oib,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'admin_role' => $request->admin_role
             ]);
         }catch (QueryException $e){
-            if($e->getCode() == "23000"){
+            if($e->getCode() === "23000"){
                 return response()->json([
                     'message' => 'Korisnik s ovim korisničkim imenom ili OIB-om već postoji.'
                 ], 422);
@@ -91,7 +94,58 @@ class UserController extends Controller
     }
 
     /**
-     * Reset users's password
+     * Set authenticator
+     * @param $id
+     * @param Request $request
+     * @return Application|ResponseFactory|Response|JsonResponse
+     */
+    public function setToken($id, Request $request)
+    {
+        $request->validate([
+            'code'  => 'required',
+        ]);
+        try {
+            $user = User::find($id);
+            $user->update([
+                'otp_token' => $request->code,
+                'admin_role' => true
+            ]);
+            return response()->json([
+                'success' => 'Radnja je uspješno obavljena.'
+            ]);
+        }catch (QueryException $e){
+            return response(false, 422);
+        }
+    }
+
+    /**
+     * Remove authenticator
+     * @param $id
+     * @return Application|ResponseFactory|JsonResponse|Response
+     */
+    public function removeToken($id)
+    {
+        if(Auth::id() == $id){
+            return response()->json([
+                'message' => 'Ne možete ukloniti token za vlastiti korisnički račun.'
+            ], 422);
+        }
+        try {
+            $user = User::find($id);
+            $user->update([
+                'otp_token' => null,
+                'admin_role' => false
+            ]);
+            return response()->json([
+                'success' => 'Radnja je uspješno obavljena.'
+            ]);
+        }catch (QueryException $e){
+            return response(false, 422);
+        }
+    }
+
+    /**
+     * Reset user's password
      * @param $id
      * @return JsonResponse
      */
@@ -107,7 +161,7 @@ class UserController extends Controller
     }
 
     /**
-     * Delete user
+     * Deleting user
      * @param $id
      * @return JsonResponse
      */
@@ -121,9 +175,16 @@ class UserController extends Controller
         try {
             User::destroy($id);
         }catch (QueryException $e){
-            return response()->json([
-                'message' => 'Nije moguće obrisati odabranog korisnika.'
-            ], 422);
+            // TODO: ispitati kôd za prikaz greške
+            if($e->getCode() === ""){
+                return response()->json([
+                    'message' => 'Nije moguće obrisati odabranog korisnika.'
+                ], 422);
+            }else{
+                return response()->json([
+                    'message' => 'Dogodila se greška.'
+                ], 422);
+            }
         }
         return response()->json([
             'success' => 'Korisnik je uspješno obrisan.'

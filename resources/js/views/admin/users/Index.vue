@@ -2,20 +2,22 @@
     <div class="container">
         <loading-overlay v-show="loading"></loading-overlay>
         <template v-if="!loading">
-            <button type="button" class="green" @click="createUser">
-                <svg style="width:20px;height:20px" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-                </svg>
-                Kreiraj korisnika
-            </button>
+            <div class="section">
+                <button type="button" class="green" @click="createUser">
+                    <svg style="width:20px;height:20px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                    </svg>
+                    Kreiraj korisnika
+                </button>
+            </div>
             <table v-if="users.length">
                 <thead>
                     <tr>
                         <th>Korisnik</th>
-                        <th>Administrator<br>sustava</th>
                         <th>Adresa e-pošte</th>
                         <th>Telefon</th>
                         <th>OIB</th>
+                        <th>Administrator<br>sustava</th>
                         <th>Token</th>
                         <th>Posljednja prijava</th>
                         <th></th>
@@ -27,6 +29,9 @@
                             <div class="txt-bold">{{ user.firstname+' '+user.lastname }}</div>
                             <div class="txt-small">{{ user.username }}</div>
                         </td>
+                        <td>{{ user.email ? user.email : '---' }}</td>
+                        <td>{{ user.phone ? user.phone : '---' }}</td>
+                        <td>{{ user.oib }}</td>
                         <td>
                             <svg style="width:16px;height:16px" viewBox="0 0 24 24" class="txt-green" v-if="user.admin_role">
                                 <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
@@ -35,9 +40,6 @@
                                 <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                             </svg>
                         </td>
-                        <td>{{ user.email ? user.email : '---' }}</td>
-                        <td>{{ user.phone ? user.phone : '---' }}</td>
-                        <td>{{ user.oib }}</td>
                         <td>
                             <template v-if="user.otp_token">
                                 <div v-bind:class="{'txt-bold' : user.last_otp}">{{ user.otp_token }}</div>
@@ -48,8 +50,8 @@
                         <td>{{ user.last_login ? moment(user.last_login).format('DD.MM.YYYY., HH:mm:ss') : '---'}}</td>
                         <td>
                             <context>
-                                <div class="item" @click="setToken(user.id)" v-if="user.otp_token === null">Dodijeli token</div>
-                                <div class="item" @click="removeToken(user.id)" v-else>Ukloni token</div>
+                                <div class="item" @click="setToken(user)" v-if="user.otp_token === null">Dodijeli token</div>
+                                <div class="item" @click="removeToken(user)" v-else>Ukloni token</div>
                                 <div class="item" @click="resetPassword(user)">Resetiraj lozinku</div>
                                 <div class="item" @click="editUser(user)">Uredi</div>
                                 <div class="item txt-red" @click="deleteUser(user)">Obriši</div>
@@ -58,7 +60,7 @@
                     </tr>
                 </tbody>
             </table>
-            <b v-else>Trenutno ne postoji ni jedan korisnik za prikaz!</b>
+            <div class="txt-bold" v-else>Trenutno ne postoji ni jedan korisnik za prikaz!</div>
         </template>
     </div>
 </template>
@@ -89,7 +91,7 @@ export default {
                 props: { },
             });
         },
-        /*setToken(user){
+        setToken(user){
             this.$modals.push({
                 box: require("./SetToken").default,
                 props: { user },
@@ -100,7 +102,7 @@ export default {
                 box: require("./RemoveToken").default,
                 props: { user },
             });
-        },*/
+        },
         resetPassword(user){
             this.$modals.push({
                 box: require("./ResetPassword").default,

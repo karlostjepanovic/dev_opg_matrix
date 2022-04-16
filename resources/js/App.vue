@@ -25,8 +25,6 @@ export default {
         this.$loggedUser.refresh().then(async (response) => {
             if (response.id === null) {
                 return window.location.href = '/';
-            } else {
-                this.$loading = false;
             }
         }).catch(() => {
             return this.$loggedUser.logout();

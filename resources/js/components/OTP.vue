@@ -8,30 +8,46 @@
                 <div class="otp-modal-body">
                     <form method="post" @submit.prevent="submitOTP">
                         <loading-overlay v-show="loading"></loading-overlay>
+                        <div class="form-section">
+                            <div class="txt-center">Za izvršavanje radnje potrebno je upisati jednokratnu lozinku!</div>
+                        </div>
                         <div class="message" v-if="message">{{message}}</div>
                         <div class="img">
                             <img src="/assets/enter-otp.svg" alt="otp">
                         </div>
                         <div class="form-section">
                             <div class="digits">
-                                <input type="text" class="digit" v-model="digits.d1" ref="d1" placeholder=" " @input="enterDigit(1)">
-                                <input type="text" class="digit" v-model="digits.d2" ref="d2" placeholder=" " @input="enterDigit(2)">
-                                <input type="text" class="digit" v-model="digits.d3" ref="d3" placeholder=" " @input="enterDigit(3)">
-                                <input type="text" class="digit" v-model="digits.d4" ref="d4" placeholder=" " @input="enterDigit(4)">
-                                <input type="text" class="digit" v-model="digits.d5" ref="d5" placeholder=" " @input="enterDigit(5)">
-                                <input type="text" class="digit" v-model="digits.d6" ref="d6" placeholder=" " @input="enterDigit(6)">
+                                <input type="text"
+                                       class="digit"
+                                       v-for="(digit, i) in digits"
+                                       v-model="digits[i]"
+                                       :ref="'d'+i"
+                                       placeholder=" "
+                                       @input="onInput(i)"
+                                       @keydown.delete="onDelete(i, $event)"
+                                       maxlength="1">
                             </div>
                             <div class="error txt-center" v-if="errors && errors.otp && errors.otp[0]">{{errors.otp[0]}}</div>
                         </div>
                         <div class="form-section center">
                             <button
                                 type="submit"
-                                class="green"
+                                class="green otp-button"
                                 :disabled="loading">
                                 <svg style="width:20px;height:20px" viewBox="0 0 24 24">
-                                    <path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                                    <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
                                 </svg>
                                 Potvrdi
+                            </button>
+                            <button
+                                type="button"
+                                class="red otp-button"
+                                :disabled="loading"
+                                @click="close">
+                                <svg style="width:20px;height:20px" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                </svg>
+                                Odustani
                             </button>
                         </div>
                     </form>
@@ -48,14 +64,7 @@ export default {
     data() {
         return {
             loading: false,
-            digits: {
-                d1: null,
-                d2: null,
-                d3: null,
-                d4: null,
-                d5: null,
-                d6: null,
-            },
+            digits: [null, null, null, null, null, null],
             formData: {
                 otp: null
             },
@@ -63,56 +72,60 @@ export default {
             errors: null
         };
     },
+    /*
+    * polja za znemenke treba staviti u polja te im pristupiti preko indeksa, a za unos i brisanje se koristi samo jedna metoda koja preko event argumenta zna koja je
+    * radnja učinjena te sukladno njoj onda izvršava promjenu fokusa nad poljima za znamenke
+    * */
     methods: {
         close(){
             let index = this.$modals.findIndex(f => f.id === this.$vnode.key);
             this.$modals.splice(index + 1, 1);
         },
-        enterDigit(d){
-            switch (d) {
-                case 1:
-                    this.$refs.d2.focus();
-                    break;
-                case 2:
-                    this.$refs.d3.focus();
-                    break;
-                case 3:
-                    this.$refs.d4.focus();
-                    break;
-                case 4:
-                    this.$refs.d5.focus();
-                    break;
-                case 5:
-                    this.$refs.d6.focus();
-                    break;
-                case 6:
-                    break;
+        onInput(i){
+            if(this.digits[i] !== ""){
+                const element = this.$refs['d'+(i + 1)] ? this.$refs['d'+(i + 1)][0] : false;
+                if(element){
+                    element.focus();
+                /*}else if(i === 5){
+                    const element = this.$refs['d'+ i ] ? this.$refs['d'+ i][0] : false;
+                    element.blur();*/
+                }
+            }
+        },
+        onDelete(i, e){
+            let element;
+            if(this.digits[i] === "" || this.digits[i] === null) {
+                this.digits[i - 1] = null;
+                element = this.$refs['d' + (i - 1)] ? this.$refs['d' + (i - 1)][0] : false;
+            }else{
+                this.digits[i] = null;
+                element = this.$refs['d' + i]  ? this.$refs['d' + i][0] : false;
+            }
+            if(element){
+                element.focus();
             }
         },
         submitOTP () {
             this.loading = true;
-            this.formData.otp = Object.values(this.digits).join('');
-            axios.post("/verify-otp", this.formData).then((response) => {
+            this.formData.otp = this.digits.join('');
+            axios.post("/otp/verify", this.formData).then((response) => {
                 this.resolve();
                 this.close();
             }).catch((errors) => {
                 this.message = errors.response.data.message;
                 this.errors = errors.response.data.errors;
-                this.digits.d1 = null;
-                this.digits.d2 = null;
-                this.digits.d3 = null;
-                this.digits.d4 = null;
-                this.digits.d5 = null;
-                this.digits.d6 = null;
+                this.digits = this.digits.map(() => {
+                    return null;
+                });
                 this.loading = false;
-                this.$refs.d1.focus();
+                this.$refs['d0'][0].focus();
             });
         },
     },
     mounted(){
         this.loading = true;
         setTimeout(() => {
-            this.$refs.d1.focus();
+            this.$refs['d0'][0].focus();
             this.loading = false;
         }, 500);
     }
@@ -150,6 +163,8 @@ export default {
     min-width: 400px;
     background: white;
     width: 450px;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .otp-modal-header {
@@ -165,11 +180,12 @@ export default {
     align-items: center;
     justify-content: center;
     user-select: none;
+    background: var(--dark-green);
 }
 
 .otp-modal-title {
     font-size: 150%;
-    color: var(--dark-green);
+    color: white;
     margin-left: 10px;
 }
 
@@ -240,5 +256,9 @@ export default {
     -webkit-border-radius: 10px;
     background-color: #d3d3d3;
     -webkit-box-shadow: inset -1px -1px 0 rgb(0 0 0 / 5%), inset 1px 1px 0 rgb(0 0 0 / 5%);
+}
+
+.otp-button {
+    width: 120px!important;
 }
 </style>
