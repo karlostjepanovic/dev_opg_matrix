@@ -9,7 +9,7 @@
                 </div>
             </div>
         </template>
-        <div class="txt-bold" v-else>Ne postoji ni jedan OPG koju možete odabrati</div>
+        <div class="txt-bold" v-else>Ne postoji ni jedan OPG koji možete odabrati</div>
     </main-template>
 </template>
 

@@ -27,7 +27,6 @@ class CreateUsersTable extends Migration
             $table->char('font_size')->default('n');
             $table->dateTime('last_login')->nullable();
             $table->dateTime('last_otp')->nullable();
-            $table->timestamps();
         });
     }
 

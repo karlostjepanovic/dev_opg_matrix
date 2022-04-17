@@ -3,10 +3,12 @@
         <form method="post" @submit.prevent="deleteFamilyFarm">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
-            <div class="text">Jeste li sigurni da želite obrisati odabrani OPG?</div>
-            <div class="text">
-                <div class="txt-bold">{{familyFarm.name}}</div>
-                <div class="txt-small txt-gray">{{'('+familyFarm.place+')'}}</div>
+            <div class="form-section">
+                <div class="text">Jeste li sigurni da želite obrisati odabrani OPG?</div>
+                <div class="text">
+                    <div class="txt-bold">{{familyFarm.name}}</div>
+                    <div class="txt-small txt-gray">{{familyFarm.place}}</div>
+                </div>
             </div>
             <div class="form-section center">
                 <button

@@ -49,12 +49,13 @@
                             </svg>
                         </td>
                         <td>
-                            <div class="txt-bold">{{ familyFarm.owner.firstname+' '+familyFarm.owner.lastname }}</div>
+                            {{ familyFarm.owner.firstname+' '+familyFarm.owner.lastname }}
                             <div class="txt-small txt-gray" v-if="familyFarm.owner.phone">{{ familyFarm.owner.phone }}</div>
                             <div class="txt-small txt-gray" v-if="familyFarm.owner.email">{{ familyFarm.owner.email }}</div>
                         </td>
                         <td>
                             <context>
+                                <div class="item" @click="setFamilyFarm(familyFarm)">Odaberi</div>
                                 <div class="item" @click="editFamilyFarm(familyFarm)">Uredi</div>
                                 <div class="item txt-red" @click="deleteFamilyFarm(familyFarm)">Obriši</div>
                             </context>
@@ -81,7 +82,7 @@ export default {
             return new Promise((resolve, reject) => {
                 axios.post("/admin/get-family-farms").then((response) => {
                     this.familyFarms = response.data;
-                    resolve();
+                    return resolve();
                 }).catch(() => {
                     return reject();
                 });
@@ -92,6 +93,9 @@ export default {
                 box: require("./Create").default,
                 props: { },
             });
+        },
+        setFamilyFarm(familyFarm){
+            this.$root.$emit('setFamilyFarm', familyFarm.id);
         },
         editFamilyFarm(familyFarm){
             this.$modals.push({
@@ -110,15 +114,16 @@ export default {
         this.getAppFamilyFarms().then(() => {
             this.loading = false;
         }).catch(() => {
-            this.$root.$emit('error');
+            return this.$root.$emit('error');
         });
     },
-    mounted() {
-        this.$root.$on('getAppFamilyFarms', (resolve) => {
+    mounted(){
+        this.$root.$off("getAppFamilyFarms");
+        this.$root.$on('getAppFamilyFarms', resolve => {
             this.getAppFamilyFarms().then(() => {
-                resolve();
+                return resolve();
             }).catch(() => {
-                this.$root.$emit('error');
+                return this.$root.$emit('error');
             });
         });
     }

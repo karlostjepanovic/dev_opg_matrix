@@ -1,6 +1,6 @@
 <template>
     <div id="modal">
-        <div class="modal-container" :class="size" ref="modal" v-bind:style="{ top: topValue+'px', left: leftValue + 'px' }">
+        <div class="modal-container" :class="size" ref="modal">
             <div class="modal-header">
                 <div class="modal-title">{{title}}</div>
                 <div class="modal-close" @click="close">
@@ -22,25 +22,12 @@
 export default {
     name: "Modal",
     props: ['title', 'size'],
-    data(){
-        return {
-            topValue: 0,
-            leftValue: 0
-        }
-    },
     methods: {
         close(){
             let index = this.$modals.findIndex(f => f.id === this.$vnode.key);
             this.$modals.splice(index, 1);
         }
     },
-    mounted(){
-        /*const modalBox = this.$refs.modal;
-        let modalWidth = modalBox.clientWidth;
-        let modalHeight = modalBox.clientHeight;
-        this.topValue = (window.innerHeight/2) - (modalHeight/2) - 50;
-        this.leftValue = (window.innerWidth/2) - (modalWidth/2);*/
-    }
 }
 </script>
 
@@ -106,12 +93,14 @@ export default {
 .modal-close {
     background: var(--dark-green);
     color: white;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
+    margin: 5px;
 }
 
 .modal-close:hover {

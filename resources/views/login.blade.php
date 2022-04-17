@@ -41,6 +41,11 @@
                     Karlo Stjepanović © {{date('Y.')}}
                 </div>
             </form>
+            @if(1)
+                <div class="info-wrap">
+                    Poštovani korisnici,<br>aplikacija <strong>OPGmatrix</strong> neće biti dostupna u petak, <strong>22. travnja 2022.</strong> godine, u razdoblju od <strong>15:00h</strong> do <strong>16:00h</strong> zbog radova na održavanju sustava.<br>Zahvaljujemo se na razumijevanju!
+                </div>
+            @endif
         </div>
     </div>
     <script type="text/javascript">
@@ -53,12 +58,11 @@
     </script>
     <style>
         .container {
-            width: 100%;
-            margin-top: calc(20vH - 5%);
-            padding-bottom: 20vH;
+            padding: calc(5vH + 2%);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            font-size: 14px!important;
         }
 
         .title {
@@ -69,10 +73,20 @@
         .title {
             font-size: 180%;
             color: var(--dark-green);
+            transition: unset!important;
         }
 
         .form-wrap {
             width: 320px;
+        }
+
+        .info-wrap {
+            width: 100%;
+            padding: 20px;
+            background: var(--light-green);
+            border-radius: 4px;
+            margin-top: 50px;
+            color: var(--dark-green);
         }
     </style>
 @endsection

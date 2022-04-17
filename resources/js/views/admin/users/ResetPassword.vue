@@ -50,7 +50,6 @@ export default {
     },
     created() {
         if(this.user === null){
-            alert("123");
             return this.$root.$emit('error');
         }
         this.loading = false;

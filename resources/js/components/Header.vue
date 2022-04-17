@@ -2,30 +2,30 @@
     <header v-if="loggedUser.id">
         <div class="breadcrumb">
             <router-link :to="{name: 'index'}" class="app-name"><strong>OPG</strong>matrix</router-link>
-            <!--<div class="menu" @click="toggleDropdown" v-if="school.id">
+            <div class="menu" @click="toggleDropdown" v-if="familyFarm.id">
                 <div class="item">
-                    <div class="label">ŠKOLA</div>
+                    <div class="label">OPG</div>
                     <div class="control">
-                        <div class="name">{{school.name}}</div>
-                        <div class="arrow" v-if="availableSchools.length > 0">
+                        <div class="name">{{familyFarm.name}}</div>
+                        <div class="arrow" v-if="availableFamilyFarms.length > 0">
                             <svg style="width:18px;height:18px" viewBox="0 -2 24 24">
                                 <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
                             </svg>
                         </div>
                     </div>
                 </div>
-                <div class="dropdown" v-if="availableSchools.length > 0">
+                <div class="dropdown" v-if="availableFamilyFarms.length > 0">
                     <ul class="items">
-                        <li v-for="s in availableSchools" @click="setSchool(s.id)" v-bind:class="{'selected': s.id === school.id }">
+                        <li v-for="f in availableFamilyFarms" @click="setFamilyFarm(f.id)" v-bind:class="{'selected': f.id === familyFarm.id }">
                             <span>
-                                <span>{{s.name}}</span>
-                                <span class="label">{{s.location}}</span>
+                                <span>{{f.name}}</span>
+                                <span class="label">{{f.location}}</span>
                             </span>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="menu" @click="toggleDropdown" v-if="availableSchoolYears.length > 0">
+            <!--<div class="menu" @click="toggleDropdown" v-if="availableSchoolYears.length > 0">
                 <div class="item">
                     <div class="label">ŠKOLSKA GODINA</div>
                     <div class="control">
@@ -109,7 +109,7 @@
                             <span>Upravljanje sustavom</span>
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="availableFamilyFarms.length > 1">
                         <router-link :to="{name: 'setFamilyFarm'}">
                             <svg style="width:20px;height:20px" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
@@ -118,7 +118,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link :to="{}">
+                        <router-link :to="{name: 'profile'}">
                             <svg style="width:20px;height:20px" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
                             </svg>
@@ -126,7 +126,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link :to="{}">
+                        <router-link :to="{name: 'changePassword'}">
                             <svg style="width:20px;height:20px" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" />
                             </svg>
@@ -165,6 +165,26 @@ export default {
                 this.$availableFamilyFarms = response;
             });
         },
+        setFamilyFarm(familyFarmId){
+            this.$loading = true;
+            this.$familyFarm.name = "Molimo pričekajte...";
+            //this.$schoolClass = new SchoolClass();
+            //this.$availableSchoolClasses = [];
+            this.$familyFarm.set(familyFarmId).then(async (response) => {
+                this.$loggedUser.refresh().then(() => {
+                    /*this.getSchoolYears();
+                    this.refreshSchoolYear();
+                    this.getSchoolClasses();
+                    this.refreshSchoolClass();*/
+                    this.$loading = false;
+                    return this.$router.push({name: 'setMatrix'}).catch(() => {});
+                }).catch((response) => {
+                    return this.$loggedUser.logout();
+                });
+            }).catch(() => {
+                return this.$root.$emit('error');
+            });
+        },
     },
     computed: {
         loggedUser: function () {
@@ -173,11 +193,22 @@ export default {
         familyFarm: function () {
             return this.$familyFarm;
         },
+        availableFamilyFarms: function () {
+            return this.$availableFamilyFarms;
+        },
     },
     async created() {
         await this.getFamilyFarms();
         this.$loading = false;
     },
+    mounted() {
+        this.$root.$on('getAvailableFamilyFarms', () => {
+            this.getFamilyFarms();
+        });
+        this.$root.$on('setFamilyFarm', (familyFarmId) => {
+            this.setFamilyFarm(familyFarmId);
+        });
+    }
 }
 </script>
 

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use function response;
 
 class UserController extends Controller
@@ -30,7 +31,6 @@ class UserController extends Controller
             'oib'           => 'required|numeric|digits:11',
             'email'         => 'nullable|email',
             'phone'         => 'nullable',
-            'admin_role'    => 'bool'
         ]);
         try {
             User::create([
@@ -41,12 +41,15 @@ class UserController extends Controller
                 'oib' => $request->oib,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'admin_role' => $request->admin_role
             ]);
         }catch (QueryException $e){
             if($e->getCode() === "23000"){
                 return response()->json([
                     'message' => 'Korisnik s ovim korisničkim imenom ili OIB-om već postoji.'
+                ], 422);
+            }else{
+                return response()->json([
+                    'message' => 'Dogodila se greška.'
                 ], 422);
             }
         }
@@ -85,6 +88,10 @@ class UserController extends Controller
             if($e->getCode() === "23000"){
                 return response()->json([
                     'message' => 'Korisnik s ovim korisničkim imenom ili OIB-om već postoji.'
+                ], 422);
+            }else{
+                return response()->json([
+                    'message' => 'Dogodila se greška.'
                 ], 422);
             }
         }
@@ -134,6 +141,7 @@ class UserController extends Controller
             $user = User::find($id);
             $user->update([
                 'otp_token' => null,
+                'last_otp' => null,
                 'admin_role' => false
             ]);
             return response()->json([
@@ -157,6 +165,57 @@ class UserController extends Controller
         ]);
         return response()->json([
             'success' => 'Korisniku je lozinka uspješno resetirana.'
+        ]);
+    }
+
+    /**
+     * Changing password
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password'   => 'required|password',
+            'new_password'       => 'required|min:6',
+            'repeat_password'    => 'required|same:new_password'
+        ]);
+
+        $user = User::find(Auth::id());
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+        return response()->json([
+            'success' => 'Lozinka je uspješno promijenjena.'
+        ], 200);
+    }
+
+    /**
+     * Updateing profile
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $request->validate([
+            'phone'                         => 'nullable',
+            'email'                         => 'nullable|email',
+            'font_size'                     => 'required',
+        ]);
+        try {
+            $user = User::find(Auth::id());
+            $user->update([
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'font_size' => $request->font_size,
+            ]);
+        }catch (QueryException $e){
+            return response()->json([
+                'message' => 'Dogodila se greška.'
+            ], 422);
+        }
+        return response()->json([
+            'success' => 'Promjene su uspješno spremljene.'
         ]);
     }
 

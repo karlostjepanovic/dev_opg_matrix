@@ -2,6 +2,7 @@
     <modal title="Uređivanje OPG-a" ref="modal" size="m">
         <form method="post" @submit.prevent="editFamilyFarm">
             <loading-overlay v-show="loading"></loading-overlay>
+            <div class="editing"><strong>PAŽNJA:</strong> uređujete podatke za odabrani OPG!</div>
             <div class="message" v-if="message">{{message}}</div>
             <div class="form-section row">
                 <div class="form-control">

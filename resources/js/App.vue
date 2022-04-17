@@ -4,8 +4,8 @@
         <loading-overlay v-show="loading"></loading-overlay>
         <Header v-if="loggedUser.id"></Header>
         <router-view v-if="loggedUser.id && !loading"></router-view>
-        <template v-for="modal in modals" v-show="!loading">
-            <component :is="modal.box" v-bind="modal.props"></component>
+        <template v-for="(modal, i) in modals" v-show="!loading">
+            <component :is="modal.box" v-bind="modal.props" :key="i"></component>
         </template>
     </div>
 </template>
@@ -18,25 +18,42 @@ export default {
     methods: {
         error() {
             this.$toast.error("Dogodila se greška!");
-            this.$router.push({name: 'index'});
+            this.$loading = true;
+            // TODO: dodati da se obrišu svi popup prozori
+            setTimeout(() => {
+                return window.location.href = "/";
+                this.$router.push({name: 'index'}).catch(() => {});
+            }, 1000);
         }
     },
     mounted(){
         this.$loggedUser.refresh().then(async (response) => {
-            if (response.id === null) {
+            await this.$familyFarm.refresh().then(async (response) => {
+                if (response.id === null) {
+                    return window.location.href = '/';
+                } else {
+                    this.$loading = false;
+                }
+            }).catch(() => {
                 return window.location.href = '/';
-            }
+            });
         }).catch(() => {
             return this.$loggedUser.logout();
         });
-        this.$root.$on('error', () => {
-            this.error();
-        });
+
+        // JEDNOKRATNA LOZINKA
+        this.$root.$off('verifyOTP');
         this.$root.$on('verifyOTP', (resolve) => {
             this.$modals.push({
                 box: require("./components/OTP").default,
                 props: { resolve },
             });
+        });
+
+        // GREŠKA
+        this.$root.$off('error');
+        this.$root.$on('error', () => {
+            this.error();
         });
     },
     computed: {

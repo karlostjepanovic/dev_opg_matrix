@@ -4,22 +4,21 @@ export const routes = [
         path: '',
         redirect: { name: 'setFamilyFarm'},
     },
-    /*{
-        path: '/settings/',
-        component: require('./views/settings/Template').default,
-        children: [
-            {
-                name: 'profile',
-                path: 'profile',
-                component: require('./views/settings/Profile').default,
-            },
-            {
-                name: 'changePassword',
-                path: 'change-password',
-                component: require('./views/settings/ChangePassword').default,
-            },
-        ],
-    },*/
+    {
+        name: 'setFamilyFarm',
+        path: '/set-family-farm',
+        component: require('./views/SetFamilyFarm').default
+    },
+    {
+        name: 'profile',
+        path: '/profile',
+        component: require('./views/settings/Profile').default,
+    },
+    {
+        name: 'changePassword',
+        path: '/change-password',
+        component: require('./views/settings/ChangePassword').default,
+    },
     /* ADMINISTRACIJA SUSTAVA */
     {
         path: '/admin/',
@@ -37,13 +36,46 @@ export const routes = [
                 path: 'users',
                 component: require('./views/admin/users/Index').default,
             },
+            /* KULTURE */
+            {
+                name: 'appCultures',
+                path: 'cultures',
+                component: require('./views/admin/cultures/Index').default,
+            },
+            /* SREDSTVA */
+            {
+                name: 'appSupplies',
+                path: 'supplies',
+                component: require('./views/admin/supplies/Index').default,
+            },
         ],
     },
 
+    /* OPG */
+    /* ADMINISTRACIJA SUSTAVA */
     {
-        name: 'setFamilyFarm',
-        path: '/set-family-farm',
-        component: require('./views/SetFamilyFarm').default
+        path: '/family-farm/',
+        component: require('./views/familyFarm/Template').default,
+        children: [
+            /* MATRICE */
+            {
+                path: 'matrices',
+                component: require('./views/familyFarm/matrices/Template').default,
+                children: [
+                    {
+                        name: 'setMatrix',
+                        path: 'set-matrix',
+                        component: require('./views/familyFarm/matrices/SetMatrix').default,
+                    },
+                ],
+            },
+            /* DJELATNICI */
+            {
+                name: 'showEmployees',
+                path: 'employees',
+                component: require('./views/familyFarm/employees/Index').default,
+            },
+        ],
     },
     {
         name: '404',

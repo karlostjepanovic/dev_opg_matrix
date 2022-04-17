@@ -4,6 +4,7 @@ export class LoggedUser {
     firstname = null;
     lastname = null;
     oib = null;
+    phone = null;
     email = null;
     username = null;
     adminRole = false;
@@ -20,11 +21,11 @@ export class LoggedUser {
                 this.lastname = response.data.lastname;
                 this.username = response.data.username;
                 this.oib = response.data.oib;
+                this.phone = response.data.phone;
                 this.email = response.data.email;
                 this.adminRole = response.data.admin_role;
                 this.fontSize = response.data.font_size;
-                /*this.school.adminRole = response.data.school_admin_role;
-                this.school.associateRole = response.data.school_associate_role;*/
+                this.familyFarm.adminRole = response.data.family_farm_admin_role;
             }).catch(() => {
                 reject();
             });
@@ -37,6 +38,7 @@ export class LoggedUser {
         this.firstname = null;
         this.lastname = null;
         this.oib = null;
+        this.phone = null;
         this.email = null;
         this.username = null;
         this.adminRole = false;

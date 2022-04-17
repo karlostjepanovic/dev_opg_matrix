@@ -16,16 +16,16 @@
                 </router-link>
             </li>
             <li>
-                <router-link :to="{name: 'appUsers'}"
+                <router-link :to="{name: 'appCultures'}"
                              class="navigation-tab"
-                             :class="{'active' : this.$route.name === ''}">
+                             :class="{'active' : this.$route.name === 'appCultures'}">
                     Kulture
                 </router-link>
             </li>
             <li>
-                <router-link :to="{name: 'appUsers'}"
+                <router-link :to="{name: 'appSupplies'}"
                              class="navigation-tab"
-                             :class="{'active' : this.$route.name === ''}">
+                             :class="{'active' : this.$route.name === 'appSupplies'}">
                     Sredstva
                 </router-link>
             </li>

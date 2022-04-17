@@ -63,7 +63,7 @@ export default {
     props: ['resolve'],
     data() {
         return {
-            loading: false,
+            loading: true,
             digits: [null, null, null, null, null, null],
             formData: {
                 otp: null
@@ -72,14 +72,10 @@ export default {
             errors: null
         };
     },
-    /*
-    * polja za znemenke treba staviti u polja te im pristupiti preko indeksa, a za unos i brisanje se koristi samo jedna metoda koja preko event argumenta zna koja je
-    * radnja učinjena te sukladno njoj onda izvršava promjenu fokusa nad poljima za znamenke
-    * */
     methods: {
         close(){
             let index = this.$modals.findIndex(f => f.id === this.$vnode.key);
-            this.$modals.splice(index + 1, 1);
+            this.$modals.splice(index, 1);
         },
         onInput(i){
             if(this.digits[i] !== ""){
@@ -123,11 +119,15 @@ export default {
         },
     },
     mounted(){
-        this.loading = true;
-        setTimeout(() => {
-            this.$refs['d0'][0].focus();
-            this.loading = false;
-        }, 500);
+        if(this.$loggedUser.adminRole){
+            setTimeout(() => {
+                this.$refs['d0'][0].focus();
+                this.loading = false;
+            }, 500);
+        }else{
+            this.resolve();
+            this.close();
+        }
     }
 }
 </script>

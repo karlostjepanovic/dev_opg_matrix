@@ -29,7 +29,6 @@ class CreateFamilyFarmsTable extends Migration
                 ->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
-            $table->timestamps();
         });
     }
 

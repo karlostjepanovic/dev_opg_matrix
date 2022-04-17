@@ -26,8 +26,22 @@ class User extends Authenticatable
         'last_otp',
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'family_farm_admin_role'];
     public function getFullNameAttribute() {
         return $this->attributes['full_name'] = $this->firstname." ".$this->lastname;
+    }
+    public function getFamilyFarmAdminRoleAttribute() {
+        return $this->attributes['family_farm_admin_role'] = $this->familyFarms()->where('family_farm_id', '=', session('familyFarm')['id'])->first()['pivot']['admin_role'];
+    }
+
+    // korisnik je djelatnik u opg-ovima
+    public function familyFarms()
+    {
+        return $this->belongsToMany(
+            FamilyFarm::class,
+            'employees',
+            'user_id',
+            'family_farm_id')
+            ->withPivot(Schema::getColumnListing('employees'));
     }
 }

@@ -1,11 +1,18 @@
 <?php
 
+use App\Http\Controllers\App\CultureController;
 use App\Http\Controllers\App\FamilyFarmController;
+use App\Http\Controllers\App\SupplyController;
 use App\Http\Controllers\App\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FamilyFarm\EmployeeController;
 use App\Http\Controllers\Token\TokenController;
+use App\Models\App\Culture;
 use App\Models\App\FamilyFarm;
+use App\Models\App\Supply;
 use App\Models\App\User;
+use App\Models\FamilyFarm\Employee;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -38,8 +45,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/logged-user', function () {
         return Auth::user();
     });
+    Route::post('/search-user/oib', function (Request $request){
+        $request->validate([
+            'oib' => 'required',
+        ]);
+        return User::where('oib', '=', $request->oib)->get()->first();
+    });
 
     // OPG
+    Route::post('/set-family-farm/{id}', [FamilyFarmController::class, 'setFamilyFarm']);
     Route::post('/family-farm', function () {
         return FamilyFarm::where('id', '=', session('familyFarm')['id'])->with('owner')->get()->first();
     });
@@ -74,19 +88,32 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('remove-token/{id}', [UserController::class, 'removeToken']);
 
         // KULTURE
-        /*Route::post('get-cultures', [CultureController::class, 'getCultures']);
-        Route::post('get-all-cultures', [CultureController::class, 'getAllCultures']);
-        Route::post('create-culture', [CultureController::class, 'createCultureAction']);
-        Route::post('edit-culture/{id}', [CultureController::class, 'editCultureAction']);
-        Route::post('delete-culture/{id}', [CultureController::class, 'deleteCultureAction']);
+        Route::post('get-cultures', function () {
+            return Culture::orderBy('name')->get()->toArray();
+        });
+        Route::post('create-culture', [CultureController::class, 'createCulture']);
+        Route::post('edit-culture/{id}', [CultureController::class, 'editCulture']);
+        Route::post('delete-culture/{id}', [CultureController::class, 'deleteCulture']);
 
         // SREDSTVA
-        Route::post('get-supplies', [SupplyController::class, 'getSupplies']);
-        Route::post('get-all-supplies', [SupplyController::class, 'getAllSupplies']);
-        Route::post('create-supply', [SupplyController::class, 'createSupplyAction']);
-        Route::post('supply/{id}/add-culture', [SupplyController::class, 'addCultureAction']);
-        Route::post('supply/{id}/remove-culture', [SupplyController::class, 'removeCultureAction']);
-        Route::post('edit-supply/{id}', [SupplyController::class, 'editSupplyAction']);
-        Route::post('delete-supply/{id}', [SupplyController::class, 'deleteSupplyAction']);*/
+        Route::post('get-supplies', function () {
+            return Supply::orderBy('name')->get()->toArray();
+        });
+        Route::post('create-supply', [SupplyController::class, 'createSupply']);
+        Route::post('supply/{id}/add-culture', [SupplyController::class, 'addCulture']);
+        Route::post('supply/{id}/remove-culture', [SupplyController::class, 'removeCulture']);
+        Route::post('edit-supply/{id}', [SupplyController::class, 'editSupply']);
+        Route::post('delete-supply/{id}', [SupplyController::class, 'deleteSupply']);
+    });
+
+    /* OPG */
+    Route::group(["prefix" => "family-farm"], function() {
+        // DJELATNICI
+        Route::post('get-employees', function () {
+            return FamilyFarm::find(session('familyFarm')['id'])->employees()->orderBy('lastname')->orderBy('firstname')->orderBy('username')->get()->toArray();
+        });
+        Route::post('add-employee', [EmployeeController::class, 'createEmployee']);
+        Route::post('edit-employee/{id}', [EmployeeController::class, 'editEmployee']);
+        Route::post('remove-employee/{id}', [EmployeeController::class, 'removeEmployee']);
     });
 });

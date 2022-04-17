@@ -4,10 +4,11 @@ namespace App\Models\App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class FamilyFarm extends Model
 {
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'name',
@@ -25,5 +26,16 @@ class FamilyFarm extends Model
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id', 'id');
+    }
+
+    // djelatnici
+    public function employees()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'employees',
+            'family_farm_id',
+            'user_id')
+            ->withPivot(Schema::getColumnListing('employees'));
     }
 }

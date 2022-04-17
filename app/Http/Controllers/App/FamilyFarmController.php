@@ -19,9 +19,10 @@ class FamilyFarmController extends Controller
     {
         $user = Auth::user();
         return FamilyFarm::with('owner')
-                ->where('owner_id', '=', $user->id)
-                //->orWhereIn('id', array_column($user->familyFarms()->get()->toArray(), 'id'))
-                ->orderBy('name')->get()->toArray();
+            ->where('active', '=', true)
+            ->where('owner_id', '=', $user->id)
+            ->orWhereIn('id', array_column($user->familyFarms()->get()->toArray(), 'id'))
+            ->orderBy('name')->get()->toArray();
     }
 
     /**
@@ -141,5 +142,19 @@ class FamilyFarmController extends Controller
         return response()->json([
             'success' => 'OPG je uspješno obrisan!'
         ], 200);
+    }
+
+    public function setFamilyFarm($id)
+    {
+        session()->forget('familyFarm');
+        session()->forget('matrix');
+        $family_farm = FamilyFarm::find($id);
+        $user = Auth::user();
+        if($family_farm && (in_array($id, array_column((array)$this->getAvailableFamilyFarms(), 'id')) || $user->admin_role)){
+            session()->put('familyFarm', $family_farm);
+            return response($family_farm);
+        }else{
+            return response(false, 422);
+        }
     }
 }

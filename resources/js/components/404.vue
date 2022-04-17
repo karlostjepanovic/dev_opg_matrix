@@ -4,6 +4,7 @@
             <div class="text">
                 <h2>Stranica ne postoji!</h2>
                 <p>Nažalost, stranica koju ste tražili više ne postoji ili trenutno nije dostupna...</p>
+                <p>Ispričavamo se na neugodnosti!</p>
             </div>
             <a href="/" class="button smooth green">
                 Povratak na početnu
@@ -29,7 +30,7 @@ export default {
 }
 
 .wrap {
-    width: 50%;
+    margin-top: 5vH;
 }
 
 .text {

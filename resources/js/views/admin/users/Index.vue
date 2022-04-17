@@ -79,7 +79,7 @@ export default {
             return new Promise((resolve, reject) => {
                 axios.post("/admin/get-users").then((response) => {
                     this.users = response.data;
-                    resolve();
+                    return resolve();
                 }).catch(() => {
                     return reject();
                 });
@@ -126,7 +126,7 @@ export default {
         this.getAppUsers().then(() => {
             this.loading = false;
         }).catch(() => {
-            this.$root.$emit('error');
+            return this.$root.$emit('error');
         });
     },
     computed: {
@@ -135,11 +135,12 @@ export default {
         },
     },
     mounted() {
-        this.$root.$on('getAppUsers', (resolve) => {
+        this.$root.$off("getAppUsers");
+        this.$root.$on('getAppUsers', resolve => {
             this.getAppUsers().then(() => {
-                resolve();
+                return resolve();
             }).catch(() => {
-                this.$root.$emit('error');
+                return this.$root.$emit('error');
             });
         });
     }

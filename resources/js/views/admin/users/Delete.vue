@@ -3,10 +3,12 @@
         <form method="post" @submit.prevent="deleteUser">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
-            <div class="text">Jeste li sigurni da želite obrisati odabranog korisnika?</div>
-            <div class="text">
-                <div class="txt-bold">{{user.full_name}}</div>
-                <div class="txt-small txt-gray">{{'('+user.username+')'}}</div>
+            <div class="form-section">
+                <div class="text">Jeste li sigurni da želite obrisati odabranog korisnika?</div>
+                <div class="text">
+                    <div class="txt-bold">{{user.full_name}}</div>
+                    <div class="txt-small txt-gray">{{user.username}}</div>
+                </div>
             </div>
             <div class="form-section center">
                 <button

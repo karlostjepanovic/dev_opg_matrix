@@ -2,7 +2,7 @@
     <modal title="Uređivanje korisnika" ref="modal" size="m">
         <form method="post" @submit.prevent="editUser">
             <loading-overlay v-show="loading"></loading-overlay>
-            <div class="editing"><strong>PAŽNJA:</strong> uređujete podatke odabranog korisnika!</div>
+            <div class="editing"><strong>PAŽNJA:</strong> uređujete podatke za odabranog korisnika!</div>
             <div class="message" v-if="message">{{message}}</div>
             <div class="form-section row">
                 <div class="form-control">
