@@ -5,13 +5,18 @@ use App\Http\Controllers\App\FamilyFarmController;
 use App\Http\Controllers\App\SupplyController;
 use App\Http\Controllers\App\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FamilyFarm\CadastralParcelController;
 use App\Http\Controllers\FamilyFarm\EmployeeController;
+use App\Http\Controllers\FamilyFarm\FamilyFarmCultureController;
+use App\Http\Controllers\FamilyFarm\Matrix\NoteController;
+use App\Http\Controllers\FamilyFarm\MatrixController;
 use App\Http\Controllers\Token\TokenController;
 use App\Models\App\Culture;
 use App\Models\App\FamilyFarm;
 use App\Models\App\Supply;
 use App\Models\App\User;
 use App\Models\FamilyFarm\Employee;
+use App\Models\FamilyFarm\Matrix;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -55,9 +60,16 @@ Route::group(['middleware' => ['auth']], function () {
     // OPG
     Route::post('/set-family-farm/{id}', [FamilyFarmController::class, 'setFamilyFarm']);
     Route::post('/family-farm', function () {
-        return FamilyFarm::where('id', '=', session('familyFarm')['id'])->with('owner')->get()->first();
+        return FamilyFarm::where('id', '=', session('familyFarm')['id'])->get()->first();
     });
     Route::post('/get-available-family-farms', [FamilyFarmController::class, 'getAvailableFamilyFarms']);
+
+    // MATRICA
+    Route::post('/set-matrix/{id}', [MatrixController::class, 'setMatrix']);
+    Route::post('/matrix', function () {
+        return Matrix::where('id', '=', session('matrix')['id'])->get()->first();
+    });
+    Route::post('/get-available-matrices', [MatrixController::class, 'getAvailableMatrices']);
 
     /* JEDNOKRATNE LOZINKE */
     Route::group(["prefix" => "otp"], function() {
@@ -70,7 +82,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(["prefix" => "admin"], function() {
         // OPG-OVI
         Route::post('get-family-farms', function () {
-            return FamilyFarm::orderBy('name')->with('owner')->get()->toArray();
+            return FamilyFarm::orderBy('name')->get()->toArray();
         });
         Route::post('create-family-farm', [FamilyFarmController::class, 'createFamilyFarm']);
         Route::post('edit-family-farm/{id}', [FamilyFarmController::class, 'editFamilyFarm']);
@@ -108,12 +120,39 @@ Route::group(['middleware' => ['auth']], function () {
 
     /* OPG */
     Route::group(["prefix" => "family-farm"], function() {
+        // MATRICE
+        Route::post('create-matrix', [MatrixController::class, 'createMatrix']);
+        Route::group(["prefix" => "matrix"], function() {
+            // BILJEŠKE
+            Route::post('get-notes', function () {
+                return Matrix::find(session('matrix')['id'])->notes()->orderBy('date', 'desc')->orderBy('created_at', 'desc')->get()->toArray();
+            });
+            Route::post('create-note', [NoteController::class, 'createNote']);
+            Route::post('edit-note/{id}', [NoteController::class, 'editNote']);
+            Route::post('delete-note/{id}', [NoteController::class, 'deleteNote']);
+        });
+
         // DJELATNICI
         Route::post('get-employees', function () {
             return FamilyFarm::find(session('familyFarm')['id'])->employees()->orderBy('lastname')->orderBy('firstname')->orderBy('username')->get()->toArray();
         });
-        Route::post('add-employee', [EmployeeController::class, 'createEmployee']);
+        Route::post('add-employee', [EmployeeController::class, 'addEmployee']);
         Route::post('edit-employee/{id}', [EmployeeController::class, 'editEmployee']);
         Route::post('remove-employee/{id}', [EmployeeController::class, 'removeEmployee']);
+
+        // KATASTARSKE ČESTICE
+        Route::post('get-cadastral-parcels', function () {
+            return FamilyFarm::find(session('familyFarm')['id'])->cadastralParcels()->orderBy('number')->get()->toArray();
+        });
+        Route::post('create-cadastral-parcel', [CadastralParcelController::class, 'createCadastralParcel']);
+        Route::post('edit-cadastral-parcel/{id}', [CadastralParcelController::class, 'editCadastralParcel']);
+        Route::post('delete-cadastral-parcel/{id}', [CadastralParcelController::class, 'deleteCadastralParcel']);
+
+        // KULTURE
+        Route::post('get-cultures', function () {
+            return FamilyFarm::find(session('familyFarm')['id'])->cultures()->orderBy('name')->get()->toArray();
+        });
+        Route::post('add-culture', [FamilyFarmCultureController::class, 'addCulture']);
+        Route::post('remove-culture/{id}', [FamilyFarmCultureController::class, 'removeCulture']);
     });
 });

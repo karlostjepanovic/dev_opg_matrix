@@ -7,6 +7,7 @@ import { routes } from './routes';
 import Moment from "moment/moment";
 import {LoggedUser} from "./models/LoggedUser";
 import {FamilyFarm} from "./models/FamilyFarm";
+import {Matrix} from "./models/Matrix";
 
 require('./bootstrap');
 
@@ -42,8 +43,8 @@ let globalData = new Vue({
         $loggedUser: new LoggedUser(),
         $familyFarm: new FamilyFarm(),
         $availableFamilyFarms: [],
-        /*$matrix: new Matrix(),
-        $availableMatrices: [],*/
+        $matrix: new Matrix(),
+        $availableMatrices: [],
     }
 });
 Vue.mixin({
@@ -68,6 +69,14 @@ Vue.mixin({
             get: function () { return globalData.$data.$availableFamilyFarms },
             set: function (familyFarms) { globalData.$data.$availableFamilyFarms = familyFarms; }
         },
+        $matrix: {
+            get: function () { return globalData.$data.$matrix },
+            set: function () { globalData.$data.$matrix = new Matrix(); }
+        },
+        $availableMatrices: {
+            get: function () { return globalData.$data.$availableMatrices },
+            set: function (matrices) { globalData.$data.$availableMatrices = matrices; }
+        },
     }
 });
 
@@ -77,6 +86,7 @@ Vue.component('modal', require('./components/Modal').default);
 Vue.component('context', require('./components/Context').default);
 Vue.component('multiselect', require('./components/MultiSelect').default);
 Vue.component('autocomplete', require('./components/Autocomplete').default);
+Vue.component('datepicker', require('./components/Datepicker').default);
 Vue.component('loading-overlay', require('./components/LoadingOverlay').default);
 const app = new Vue({
     el: '#app',

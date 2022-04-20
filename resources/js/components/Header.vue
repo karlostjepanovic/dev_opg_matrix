@@ -19,17 +19,16 @@
                         <li v-for="f in availableFamilyFarms" @click="setFamilyFarm(f.id)" v-bind:class="{'selected': f.id === familyFarm.id }">
                             <span>
                                 <span>{{f.name}}</span>
-                                <span class="label">{{f.location}}</span>
                             </span>
                         </li>
                     </ul>
                 </div>
             </div>
-            <!--<div class="menu" @click="toggleDropdown" v-if="availableSchoolYears.length > 0">
+            <div class="menu" @click="toggleDropdown" v-if="matrix.id">
                 <div class="item">
-                    <div class="label">ŠKOLSKA GODINA</div>
+                    <div class="label">MATRICA</div>
                     <div class="control">
-                        <div class="name">{{schoolYear.id ? schoolYear.fullName : '-'}}</div>
+                        <div class="name">{{matrix.name}}</div>
                         <div class="arrow">
                             <svg style="width:18px;height:18px" viewBox="0 -2 24 24">
                                 <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
@@ -39,36 +38,14 @@
                 </div>
                 <div class="dropdown">
                     <ul class="items">
-                        <li v-for="sy in availableSchoolYears" @click="setSchoolYear(sy.id)" v-bind:class="{'selected': sy.id === schoolYear.id }">
-                            <span>{{sy.full_name}}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="menu" @click="toggleDropdown" v-if="schoolClass.id">
-                <div class="item">
-                    <div class="label">RAZREDNI ODJEL</div>
-                    <div class="control">
-                        <div class="name">{{schoolClass.fullName}}</div>
-                        <div class="arrow">
-                            <svg style="width:18px;height:18px" viewBox="0 -2 24 24">
-                                <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="dropdown">
-                    <ul class="items">
-                        <li v-for="sc in availableSchoolClasses" @click="setSchoolClass(sc.id)" v-bind:class="{'selected': sc.id === schoolClass.id }">
+                        <li v-for="m in availableMatrices" @click="setMatrix(m.id)" v-bind:class="{'selected': m.id === matrix.id }">
                             <span>
-                                <span>{{sc.full_name}}</span>
-                                <span class="label">{{sc.master.full_name}}</span>
-                                <span class="label" v-if="sc.sub_master !== null">{{sc.sub_master.full_name}}</span>
+                                <span>{{m.name}}</span>
                             </span>
                         </li>
                     </ul>
                 </div>
-            </div>-->
+            </div>
         </div>
         <div class="user-menu" @click="toggleDropdown">
             <div class="container">
@@ -109,7 +86,7 @@
                             <span>Upravljanje sustavom</span>
                         </router-link>
                     </li>
-                    <li v-if="availableFamilyFarms.length > 1">
+                    <li>
                         <router-link :to="{name: 'setFamilyFarm'}">
                             <svg style="width:20px;height:20px" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
@@ -140,6 +117,9 @@
 </template>
 
 <script>
+import {FamilyFarm} from "../models/FamilyFarm";
+import {Matrix} from "../models/Matrix";
+
 export default {
     name: "Header",
     methods: {
@@ -160,30 +140,64 @@ export default {
         },
 
         /* OPG */
-        async getFamilyFarms() {
-            await this.$familyFarm.getFamilyFarms().then((response) => {
-                this.$availableFamilyFarms = response;
-            });
+        getFamilyFarms() {
+            return new Promise((resolve, reject) => {
+                this.$familyFarm.getFamilyFarms().then((response) => {
+                    this.$availableFamilyFarms = response;
+                    if(response.length === 0){
+                        this.$familyFarm = new FamilyFarm();
+                    }
+                    resolve();
+                }).catch(() => {
+                    reject();
+                });
+            })
         },
         setFamilyFarm(familyFarmId){
             this.$loading = true;
             this.$familyFarm.name = "Molimo pričekajte...";
-            //this.$schoolClass = new SchoolClass();
-            //this.$availableSchoolClasses = [];
+            this.$matrix = new Matrix();
+            this.$availableMatrices = [];
             this.$familyFarm.set(familyFarmId).then(async (response) => {
                 this.$loggedUser.refresh().then(() => {
-                    /*this.getSchoolYears();
-                    this.refreshSchoolYear();
-                    this.getSchoolClasses();
-                    this.refreshSchoolClass();*/
+                    this.getMatrices();
+                    this.refreshMatrix();
                     this.$loading = false;
-                    return this.$router.push({name: 'setMatrix'}).catch(() => {});
+                    return this.$router.push({name: 'showMatrices'}).catch(() => {});
                 }).catch((response) => {
                     return this.$loggedUser.logout();
                 });
             }).catch(() => {
                 return this.$root.$emit('error');
             });
+        },
+
+        /* MATRICE */
+        getMatrices() {
+            return new Promise((resolve, reject) => {
+                this.$matrix.getMatrices().then((response) => {
+                    this.$availableMatrices = response;
+                    if(response.length === 0){
+                        this.$matrix = new Matrix();
+                    }
+                    resolve();
+                }).catch(() => {
+                    reject();
+                });
+            })
+        },
+        setMatrix(matrixId){
+            this.$loading = true;
+            this.$matrix.fullName = "Molimo pričekajte...";
+            this.$matrix.set(matrixId).then((response) => {
+                this.$loading = false;
+                return this.$router.push({name: 'operations'}).catch(() => {});
+            }).catch(() => {
+                return this.$root.$emit('error');
+            });
+        },
+        refreshMatrix() {
+            this.$matrix.refresh();
         },
     },
     computed: {
@@ -196,17 +210,40 @@ export default {
         availableFamilyFarms: function () {
             return this.$availableFamilyFarms;
         },
+        matrix: function () {
+            return this.$matrix;
+        },
+        availableMatrices: function () {
+            return this.$availableMatrices;
+        },
     },
     async created() {
         await this.getFamilyFarms();
+        await this.getMatrices();
         this.$loading = false;
     },
     mounted() {
-        this.$root.$on('getAvailableFamilyFarms', () => {
-            this.getFamilyFarms();
+        this.$root.$off('getAvailableFamilyFarms');
+        this.$root.$on('getAvailableFamilyFarms', async (action = null) => {
+            this.getFamilyFarms().then(() => {
+                if (action) {
+                    action();
+                }
+            });
         });
         this.$root.$on('setFamilyFarm', (familyFarmId) => {
             this.setFamilyFarm(familyFarmId);
+        });
+        this.$root.$off('getAvailableMatrices');
+        this.$root.$on('getAvailableMatrices', async (action = null) => {
+            this.getMatrices().then(() => {
+                if (action) {
+                    action();
+                }
+            });
+        });
+        this.$root.$on('setMatrix', (matrixId) => {
+            this.setMatrix(matrixId);
         });
     }
 }
@@ -408,6 +445,24 @@ header {
     list-style: none;
     margin: 0;
     border-radius: 4px;
+    cursor: default;
+}
+
+.dropdown .items::-webkit-scrollbar {
+    width: 12px;
+    height: 18px;
+}
+
+.dropdown .items::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.dropdown .items::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    -webkit-border-radius: 10px;
+    background-color: #d3d3d3;
+    -webkit-box-shadow: inset -1px -1px 0 rgb(0 0 0 / 5%), inset 1px 1px 0 rgb(0 0 0 / 5%);
 }
 
 .dropdown .items li {
@@ -427,6 +482,8 @@ header {
 
 .dropdown .items li:hover {
     background: #f6f7fa;
+    cursor: pointer;
+    text-decoration-line: underline;
 }
 
 .dropdown .items li > * {

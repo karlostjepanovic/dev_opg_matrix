@@ -234,8 +234,7 @@ class UserController extends Controller
         try {
             User::destroy($id);
         }catch (QueryException $e){
-            // TODO: ispitati kôd za prikaz greške
-            if($e->getCode() === ""){
+            if($e->getCode() === "23000"){
                 return response()->json([
                     'message' => 'Nije moguće obrisati odabranog korisnika.'
                 ], 422);

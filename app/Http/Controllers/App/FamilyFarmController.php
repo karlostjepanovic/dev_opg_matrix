@@ -20,8 +20,10 @@ class FamilyFarmController extends Controller
         $user = Auth::user();
         return FamilyFarm::with('owner')
             ->where('active', '=', true)
-            ->where('owner_id', '=', $user->id)
-            ->orWhereIn('id', array_column($user->familyFarms()->get()->toArray(), 'id'))
+            ->where(function($query) use ($user) {
+                return $query->where('owner_id', '=', $user->id)
+                    ->orWhereIn('id', array_column($user->familyFarms()->get()->toArray(), 'id'));
+            })
             ->orderBy('name')->get()->toArray();
     }
 
@@ -127,9 +129,7 @@ class FamilyFarmController extends Controller
         try {
             FamilyFarm::destroy($id);
         }catch (QueryException $e){
-            dd($e->getCode());
-            // TODO: ispitati koji je kôd za onemogućavanje brisanja
-            if($e->getCode() === ""){
+            if($e->getCode() === "23000"){
                 return response()->json([
                     'message' => 'Nije moguće obrisati odabrani OPG.'
                 ], 422);
@@ -148,9 +148,9 @@ class FamilyFarmController extends Controller
     {
         session()->forget('familyFarm');
         session()->forget('matrix');
-        $family_farm = FamilyFarm::find($id);
+        $family_farm = FamilyFarm::with('owner')->find($id);
         $user = Auth::user();
-        if($family_farm && (in_array($id, array_column((array)$this->getAvailableFamilyFarms(), 'id')) || $user->admin_role)){
+        if($family_farm && ($family_farm->active || $user->admin_role) && (in_array($id, array_column((array)$this->getAvailableFamilyFarms(), 'id')) || $user->admin_role)){
             session()->put('familyFarm', $family_farm);
             return response($family_farm);
         }else{

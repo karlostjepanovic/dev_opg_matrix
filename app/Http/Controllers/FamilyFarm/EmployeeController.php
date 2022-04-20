@@ -6,13 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\App\User;
 use App\Models\FamilyFarm\Employee;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-    public function createEmployee(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addEmployee(Request $request): JsonResponse
     {
-        // $id je ID od korisnika (t: users)
         $request->validate([
             'user_id'       => 'required',
             'admin_role'    => 'required|bool',
@@ -39,9 +43,13 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-    public function editEmployee($id, Request $request)
+    /**
+     * @param $id
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editEmployee($id, Request $request): JsonResponse
     {
-        // $id je ID od korisnika (t: users)
         $request->validate([
             'user_id'       => 'required',
             'firstname'     => 'required',
@@ -78,7 +86,11 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-    public function removeEmployee($id)
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function removeEmployee($id): JsonResponse
     {
         try {
             $employee = Employee::where('id', '=', $id)->where('family_farm_id', '=', session('familyFarm')['id']);

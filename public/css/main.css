@@ -67,12 +67,17 @@
 
 .txt-bold { font-weight: bold; }
 
+pre {
+    white-space: pre-line;
+}
+
 /* SUČELJE */
 .message {
     margin-bottom: 20px;
-    padding: 6px 12px;
+    padding: 8px 10px;
     border-left: 4px solid var(--gray);
     color: var(--black);
+    border-radius: 4px;
 }
 
 .section {
@@ -620,6 +625,10 @@ td.top {
 tr.hover:hover,
 td.hover:hover {
     background: var(--light-green);
+}
+
+td.top {
+    vertical-align: top;
 }
 
 .table-wrap {

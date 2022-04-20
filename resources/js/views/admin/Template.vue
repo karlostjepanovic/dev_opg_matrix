@@ -59,43 +59,6 @@ export default {
 </script>
 
 <style scoped>
-.info-wrap {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-
-.hours-info {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    padding-right: 10px;
-}
-
-.hours-info .box {
-    margin-left: 40px;
-}
-
-.hours-info .divider {
-    width: 3px;
-    background: var(--light-gray);
-    margin-left: 40px;
-    position: relative;
-    align-self: stretch;
-}
-
-.box .number {
-    font-weight: bold;
-    font-size: 140%;
-    color: var(--gray);
-}
-
-.box .label {
-    font-size: 85%;
-    color: var(--green);
-}
-
 .navigation {
     display: flex;
     flex-wrap: wrap;

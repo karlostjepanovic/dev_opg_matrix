@@ -19,7 +19,7 @@ export default {
     height: 100%;
     opacity: 1;
     background: #fff;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;

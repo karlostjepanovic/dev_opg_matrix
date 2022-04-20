@@ -1,13 +1,14 @@
 <template>
     <div class="autocomplete">
         <input
-            class="blue"
+            class="green"
+            v-bind:class="extraClass"
             type="text"
             :value="value"
             v-on:input="updateValue($event.target.value)"
             @keydown.down.prevent="onArrowDown"
             @keydown.up.prevent="onArrowUp"
-            @keydown.enter.prevent="onEnter"/>
+            @keydown.enter="onEnter($event)"/>
         <ul
             id="autocomplete-results"
             v-if="results.length > 0"
@@ -32,6 +33,10 @@ export default {
             type: Array,
             required: false,
             default: () => [],
+        },
+        extraClass: {
+            required: false,
+            default: ''
         },
         value: {
             type: String,
@@ -63,7 +68,7 @@ export default {
         updateValue (value) {
             this.$emit('input', value);
             this.search = value;
-            if(value.length >= 3){
+            if(value.length >= 1){
                 this.filterResults();
             }
             if(value.length === 0){
@@ -96,10 +101,13 @@ export default {
                 this.arrowCounter = this.arrowCounter - 1;
             }
         },
-        onEnter() {
+        onEnter(e) {
             this.search = this.results[this.arrowCounter];
-            this.arrowCounter = -1;
-            this.setResult(this.search);
+            if(this.search){
+                e.preventDefault();
+                this.arrowCounter = -1;
+                this.setResult(this.search);
+            }
         },
     },
 };
@@ -144,7 +152,24 @@ export default {
 
 .autocomplete-result.is-active,
 .autocomplete-result:hover {
-    background: var(--blue);
+    background: var(--green);
     color: white;
+}
+
+.autocomplete-results::-webkit-scrollbar {
+    width: 12px;
+    height: 18px;
+}
+
+.autocomplete-results::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.autocomplete-results::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    -webkit-border-radius: 10px;
+    background-color: #d3d3d3;
+    -webkit-box-shadow: inset -1px -1px 0 rgb(0 0 0 / 5%), inset 1px 1px 0 rgb(0 0 0 / 5%);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <main-template title="Odabir OPG-a">
+    <main-template title="Odabir OPG-a" v-if="!loading" :visible="!loading">
         <template v-if="availableFamilyFarms.length">
             <div class="grid-group">
                 <div class="item green" v-for="familyFarm in availableFamilyFarms" @click="setFamilyFarm(familyFarm.id)">
@@ -28,11 +28,13 @@ export default {
         }
     },
     created() {
-        if(this.$availableFamilyFarms.length === 1){
-            this.setFamilyFarm(this.$availableFamilyFarms[0].id);
-        }else{
-            this.loading = false;
-        }
+        this.$root.$emit('getAvailableFamilyFarms', () => {
+            if (this.$availableFamilyFarms.length === 1) {
+                this.setFamilyFarm(this.$availableFamilyFarms[0].id);
+            } else {
+                this.loading = false;
+            }
+        });
     },
     computed: {
         availableFamilyFarms: function () {

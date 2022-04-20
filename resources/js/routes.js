@@ -1,7 +1,7 @@
 export const routes = [
     {
         name: 'index',
-        path: '',
+        path: '/',
         redirect: { name: 'setFamilyFarm'},
     },
     {
@@ -59,21 +59,43 @@ export const routes = [
         children: [
             /* MATRICE */
             {
+                name: 'showMatrices',
                 path: 'matrices',
+                component: require('./views/familyFarm/matrices/Index').default,
+            },
+            {
+                path: 'matrix',
                 component: require('./views/familyFarm/matrices/Template').default,
                 children: [
                     {
-                        name: 'setMatrix',
-                        path: 'set-matrix',
-                        component: require('./views/familyFarm/matrices/SetMatrix').default,
+                        name: 'operations',
+                        path: 'operations',
+                        component: require('./views/familyFarm/matrices/operations/Index').default,
                     },
-                ],
+                    {
+                        name: 'notes',
+                        path: 'notes',
+                        component: require('./views/familyFarm/matrices/notes/Index').default,
+                    },
+                ]
             },
             /* DJELATNICI */
             {
                 name: 'showEmployees',
                 path: 'employees',
                 component: require('./views/familyFarm/employees/Index').default,
+            },
+            /* KATASTARSKE ČESTICE */
+            {
+                name: 'showCadastralParcels',
+                path: 'cadastral-parcels',
+                component: require('./views/familyFarm/cadastralParcels/Index').default,
+            },
+            /* KULTURE */
+            {
+                name: 'showCultures',
+                path: 'cultures',
+                component: require('./views/familyFarm/cultures/Index').default,
             },
         ],
     },

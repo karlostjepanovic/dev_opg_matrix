@@ -21,19 +21,21 @@ export default {
             this.$loading = true;
             // TODO: dodati da se obrišu svi popup prozori
             setTimeout(() => {
-                return window.location.href = "/";
-                this.$router.push({name: 'index'}).catch(() => {});
+                //return window.location.href = "/";
+                //this.$router.push({name: 'index'}).catch(() => {});
             }, 1000);
         }
     },
     mounted(){
         this.$loggedUser.refresh().then(async (response) => {
             await this.$familyFarm.refresh().then(async (response) => {
-                if (response.id === null) {
+                await this.$matrix.refresh().then(async (response) => {
+                    if (response.id === null) {
+                        return window.location.href = '/';
+                    }
+                }).catch(() => {
                     return window.location.href = '/';
-                } else {
-                    this.$loading = false;
-                }
+                });
             }).catch(() => {
                 return window.location.href = '/';
             });

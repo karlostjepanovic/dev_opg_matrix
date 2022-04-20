@@ -84,8 +84,7 @@ class CultureController extends Controller
         try {
             Culture::destroy($id);
         }catch (QueryException $e){
-            // TODO: ispitati koji je kôd za onemogućavanje brisanja
-            if($e->getCode() === ""){
+            if($e->getCode() === "23000"){
                 return response()->json([
                     'message' => 'Nije moguće obrisati odabranu kulturu'
                 ], 422);
