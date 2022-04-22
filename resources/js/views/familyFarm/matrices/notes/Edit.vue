@@ -24,14 +24,11 @@
                 </div>
                 <div class="form-control">
                     <div class="field">
-                        <div class="note-wrap">
-                            <textarea class="input green"
-                                      :class="{'invalid' : errors && errors.note}"
-                                      id="note"
-                                      rows="8"
-                                      v-model="formData.note"></textarea>
-                            <div class="author">{{loggedUser.fullName}}</div>
-                        </div>
+                        <textarea class="input green"
+                                  :class="{'invalid' : errors && errors.note}"
+                                  id="note"
+                                  rows="8"
+                                  v-model="formData.note"></textarea>
                     </div>
                     <div class="error" v-if="errors && errors.note && errors.note[0]">{{errors.note[0]}}</div>
                 </div>
@@ -95,28 +92,5 @@ export default {
 </script>
 
 <style scoped>
-.note-wrap {
-    display: flex;
-    flex-direction: column;
-}
 
-.note-wrap textarea {
-    width: 100%;
-    border-bottom-left-radius: unset;
-    border-bottom-right-radius: unset;
-    position: relative;
-    z-index: 1;
-}
-
-.note-wrap .author {
-    border: 1px solid var(--light-gray);
-    border-top: unset;
-    background: #f8f8f8;
-    font-size: 90%;
-    text-align: right;
-    padding: 7px 5px;
-    color: var(--gray);
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
 </style>

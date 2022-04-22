@@ -187,6 +187,8 @@ return [
         'operation_type'        => 'vrsta operacije',
         'repeat_password'       => 'ponovljena lozinka',
         'supply'                => 'sredstvo',
+        'tracking'              => 'praćenje',
+        'tracking_type'         => 'način praćenja',
         'unit_price'            => 'jedinična cijena',
         'usage'                 => 'način uporabe',
         'username'              => 'korisničko ime',

@@ -4,7 +4,40 @@
             readonly
             type="text"
             :class="this.setClass"
+            @click="open($event)"
             :value="value"/>
+        <div class="datepicker" ref="datepicker" v-show="visible">
+            <div class="header">
+                <div class="arrow">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                    </svg>
+                </div>
+                <div class="title">{{months[monthNumber - 1]+', '+yearNumber+'.'}}</div>
+                <div class="arrow">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="body">
+                <div class="days">
+                    <div>PON</div>
+                    <div>UTO</div>
+                    <div>SRI</div>
+                    <div>ČET</div>
+                    <div>PET</div>
+                    <div>SUB</div>
+                    <div>NED</div>
+                </div>
+                <div class="dates" ref="dates">
+                    <template v-for="(day, index) in days">
+                        <div v-if="day.number" @click="set(day.date)" class="selectable" v-bind:class="{'selected': day.selected, 'today': day.today}">{{day.number}}</div>
+                        <div v-else></div>
+                    </template>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -23,145 +56,208 @@ export default {
     },
     data() {
         return {
-            dateValue: this.value
+            visible: false,
+            dateValue: this.value,
+            months: [
+                'Siječanj',
+                'Veljača',
+                'Ožujak',
+                'Travanj',
+                'Svibanj',
+                'Lipanj',
+                'Srpanj',
+                'Kolovoz',
+                'Rujan',
+                'Listopad',
+                'Studeni',
+                'Prosinac'
+            ],
+            monthNumber: null,
+            yearNumber: null,
+            previousMonth: null,
+            nextMonth: null,
+            days: [],
+            lastDay: null,
+            today: null,
+            selected: null,
         };
     },
+    methods: {
+        open(e){
+            this.visible = true;
+            const item = e.target;
+            this.generate();
+            this.update();
+            window.addEventListener('click', (e) => {
+                if (e.target !== item){
+                    this.visible = false;
+                }
+            });
+        },
+        generate(){
+            this.monthNumber = null;
+            this.yearNumber = null;
+            this.previousMonth = null;
+            this.nextMonth = null;
+            this.days = [];
+            this.lastDay = null;
+            this.today = null;
+            this.selected = null;
+            const datetime = this.dateValue ? new Date(this.formatStringToDate(this.dateValue)) : new Date();
+            let prefixDays = new Date(datetime.getFullYear(), datetime.getMonth(), 1).getDay();
+            if(prefixDays === 0) { prefixDays = 6; }else{ prefixDays--; }
+            this.monthNumber = (datetime.getMonth() + 1);
+            this.yearNumber = datetime.getFullYear();
+            //this.previousMonth = $this.addMonths(datetime, -1).toString();
+            //this.nextMonth = $this.addMonths(datetime, 2).toString();
+            this.prefixDays = prefixDays;
+            this.lastDay = new Date(datetime.getFullYear(), datetime.getMonth()+1, 0).getDate();
+            this.today = this.formatDate(new Date);
+            this.selected = this.dateValue ? this.formatStringToDate(this.dateValue) : false;
+        },
+        formatStringToDate(date) {
+            const parts = date.split(".");
+            return [parts[2], parts[1], parts[0]].join('-');
+        },
+        formatDate(date) {
+            let d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        },
+        update(){
+            for(let i = 1; i <= this.prefixDays; i++){
+                this.days.push({});
+            }
+            for(let i = 1; i <= this.lastDay; i++){
+                let dayId = (this.yearNumber.toString())+"-"+(this.monthNumber < 10 ? "0"+this.monthNumber : this.monthNumber.toString())+"-"+(i < 10 ? "0"+i : i.toString());
+                let dayValue = (i < 10 ? "0"+i : i.toString())+"."+(this.monthNumber < 10 ? "0"+this.monthNumber : this.monthNumber.toString())+"."+this.yearNumber+".";
+                this.days.push({
+                    number: i,
+                    date: dayValue,
+                    today: this.today === dayId,
+                    selected: this.selected === dayId
+                });
+            }
+        },
+        set(date){
+            this.dateValue = date;
+            this.$emit('input', date);
+        }
+    }
 }
 </script>
 
-<style scoped>
+<style>
+.datepicker-wrap {
+    position: relative;
+}
+
 .datepicker-wrap > input {
     width: 100%;
 }
 
-#datepicker {
-    position: fixed;
-    z-index: 201;
-    box-shadow: 0 0 10px #2b3843;
-    width: 308px;
+.datepicker {
+    position: absolute;
+    z-index: 5;
+    top: -40%;
+    left: -10%;
+    border-radius: 4px;
+    width: 350px;
     overflow: hidden;
-    border-radius: 2px;
-    animation: show 100ms linear forwards;
+    box-shadow: 0 0 30px rgb(0 0 0 / 80%);
+    user-select: none;
 }
 
-#datepicker.hide{
-    animation: hide 100ms linear forwards;
-}
-
-.datepicker-header {
-    position: relative;
-    line-height: 36px;
-    width: 100%;
-    background: var(--black);
-    color: white;
-    box-shadow: 0 0 5px var(--light-gray);
-    text-transform: uppercase;
-    height: 36px;
-}
-
-.datepicker-header #previous-month,
-.datepicker-header #month-name,
-.datepicker-header #next-month {
-    vertical-align: middle;
-}
-
-.datepicker-header #previous-month,
-.datepicker-header #next-month {
-    cursor: pointer;
-    width: 20px;
-    height: 18px;
-    margin: 8px;
-}
-
-.datepicker-header #previous-month {
-    float: left;
-    text-align: left;
-}
-
-.datepicker-header #next-month {
-    float: right;
-    text-align: right;
-}
-
-.datepicker-header #previous-month:active,
-.datepicker-header #next-month:active {
-    color: var(--blue);
-}
-
-.datepicker-header #month-name {
-    text-align: center;
-    width: calc(100% - 80px);
-    display: inline-block;
-}
-
-.datepicker-body {
-    width: 100%;
+.datepicker .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background: white;
-    padding: 3px;
-}
-
-.datepicker-days div {
-    display: inline-block;
-    width: 43px;
-    text-align: center;
-    color: var(--black);
+    color: var(--dark-green);
     font-weight: bold;
-    padding: 4px 0;
-    margin-bottom: 3px;
-    text-decoration-line: underline;
+    border-bottom: 1px solid var(--green);
+    font-size: 110%;
+    text-transform: uppercase;
 }
 
-.datepicker-dates div {
-    border: 1px solid transparent;
-    display: inline-block;
-    width: 43px;
-    text-align: center;
-    padding: 6px 0;
-    border-radius: 2px;
+.datepicker .header > * {
+    margin: 5px;
 }
 
-.datepicker-dates div.selectable {
+.datepicker .header .arrow {
+    background: white;
+    color: var(--dark-green);
+    width: 30px;
+    height: 30px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
 }
 
-.datepicker-dates div.selected {
-    border: 1px solid var(--black);
-    color: white;
-    background: var(--black);
+.datepicker .header .arrow:hover {
+    background: var(--light-green);
+}
+
+.datepicker .body {
+    background: white;
+    padding: 5px;
+}
+
+.datepicker .body .days {
+    display: flex;
+    align-items: center;
+}
+
+.datepicker .days > div {
+    text-align: center;
+    flex: 1;
+    padding: 5px;
+    color: var(--green);
     font-weight: bold;
 }
 
-.datepicker-dates div.sunday {
-    color: var(--light-gray);
+.datepicker .body .dates {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
 }
 
-.datepicker-dates div.today {
-    color: var(--yellow);
+.datepicker .dates > div {
+    text-align: center;
+    width: calc(100%/7);
+    line-height: 34px;
+    color: var(--gray);
+    border-radius: 4px;
+}
+
+.datepicker .dates > div.selected {
+    border: 1px solid var(--green);
+    color: var(--dark-green);
+    background: var(--light-green);
+    font-weight: bold;
+}
+
+.datepicker .dates > div.today {
+    color: var(--green);
     text-decoration-line: underline;
     font-weight: bold;
-    border: 1px solid var(--yellow);
+    border: 1px solid var(--green);
 }
 
-.datepicker-dates div.selectable:hover {
-    border: 1px solid var(--black);
-    color: var(--black);
-    font-weight: bold;
-}
-
-#clear-all-button {
-    width: 100%;
-    border: 1px solid var(--red);
-    background: var(--red);
-    color: white;
-    padding: 6px;
-    font-size: 90%;
-    text-align: center;
-    border-radius: 2px;
-    margin-top: 4px;
+.datepicker .dates > div.selectable:hover {
+    color: var(--green);
+    background: #eff0f5;
+    text-decoration-line: underline;
     cursor: pointer;
-}
-
-#clear-all-button:hover {
-    background: var(--dark-red);
 }
 </style>

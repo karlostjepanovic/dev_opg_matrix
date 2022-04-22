@@ -16,7 +16,6 @@ class CreateMatricesTable extends Migration
         Schema::create('matrices', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('area');
             $table->boolean('locked')->default(false);
             $table->bigInteger('culture_id')->unsigned();
             $table->foreign('culture_id')
@@ -30,6 +29,7 @@ class CreateMatricesTable extends Migration
                 ->on('cadastral_parcels')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
+            $table->enum('tracking_type', ['p', 'k']);
             $table->unique(['name', 'culture_id', 'cadastral_parcel_id']);
         });
     }

@@ -22,52 +22,54 @@
             </div>
             <div class="form-section row">
                 <div class="form-control">
-                    <label for="cadastral_parcel_id" class="required">Katastarska čestica:</label>
+                    <label for="cadastral_parcel" class="required">Katastarska čestica:</label>
                 </div>
                 <div class="form-control w-7">
                     <div class="field">
                         <select class="input green"
-                                :class="{'invalid' : errors && errors.cadastral_parcel_id}"
-                                id="cadastral_parcel_id"
-                                v-model="formData.cadastral_parcel_id">
+                                :class="{'invalid' : errors && errors.cadastral_parcel}"
+                                id="cadastral_parcel"
+                                v-model="formData.cadastral_parcel">
                             <option :value="null">--- odaberite katastarsku česticu ---</option>
                             <option v-for="cadastralParcel in cadastralParcels" :key="cadastralParcel.id" :value="cadastralParcel.id">{{cadastralParcel.full_name}}</option>
                         </select>
                     </div>
-                    <div class="error" v-if="errors && errors.cadastral_parcel_id && errors.cadastral_parcel_id[0]">{{errors.cadastral_parcel_id[0]}}</div>
+                    <div class="error" v-if="errors && errors.cadastral_parcel && errors.cadastral_parcel[0]">{{errors.cadastral_parcel[0]}}</div>
                 </div>
             </div>
             <div class="form-section row">
                 <div class="form-control">
-                    <label for="area" class="required">Površina:</label>
-                </div>
-                <div class="form-control w-7">
-                    <div class="field">
-                        <input type="text"
-                               class="green w-3"
-                               :class="{'invalid' : errors && errors.area}"
-                               id="area"
-                               v-model="formData.area">
-                        <span>m<sup>2</sup></span>
-                    </div>
-                    <div class="error" v-if="errors && errors.area && errors.area[0]">{{errors.area[0]}}</div>
-                </div>
-            </div>
-            <div class="form-section row">
-                <div class="form-control">
-                    <label for="culture_id" class="required">Kultura:</label>
+                    <label for="culture" class="required">Kultura:</label>
                 </div>
                 <div class="form-control w-7">
                     <div class="field">
                         <select class="input green"
-                                :class="{'invalid' : errors && errors.culture_id}"
-                                id="culture_id"
-                                v-model="formData.culture_id">
+                                :class="{'invalid' : errors && errors.culture}"
+                                id="culture"
+                                v-model="formData.culture">
                             <option :value="null">--- odaberite kulturu ---</option>
                             <option v-for="culture in cultures" :key="culture.id" :value="culture.id">{{culture.name}}</option>
                         </select>
                     </div>
-                    <div class="error" v-if="errors && errors.culture_id && errors.culture_id[0]">{{errors.culture_id[0]}}</div>
+                    <div class="error" v-if="errors && errors.culture && errors.culture[0]">{{errors.culture[0]}}</div>
+                </div>
+            </div>
+            <div class="form-section row">
+                <div class="form-control">
+                    <label for="tracking_type" class="required">Način praćenja:</label>
+                </div>
+                <div class="form-control w-7">
+                    <div class="field">
+                        <select class="input green"
+                                :class="{'invalid' : errors && errors.tracking_type}"
+                                id="tracking_type"
+                                v-model="formData.tracking_type">
+                            <option :value="null">--- odaberite način ---</option>
+                            <option value="p">površina</option>
+                            <option value="k">količina</option>
+                        </select>
+                    </div>
+                    <div class="error" v-if="errors && errors.tracking_type && errors.tracking_type[0]">{{errors.tracking_type[0]}}</div>
                 </div>
             </div>
             <div class="form-section center">
@@ -92,9 +94,9 @@ export default {
             cadastralParcels: [],
             formData: {
                 name: null,
-                area: null,
-                culture_id: null,
-                cadastral_parcel_id: null
+                culture: null,
+                cadastral_parcel: null,
+                tracking_type: null,
             },
             message: null,
             errors: null

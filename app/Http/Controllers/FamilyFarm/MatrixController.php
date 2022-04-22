@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class MatrixController extends Controller
 {
-    public function getAvailableMatrices()
+    public function getAvailableMatrices(): array
     {
         $familyFarm = FamilyFarm::find(session('familyFarm')['id']);
         if($familyFarm){
@@ -37,27 +37,22 @@ class MatrixController extends Controller
     public function createMatrix(Request $request): JsonResponse
     {
         $request->validate([
-            'name'                  => 'required',
-            'culture_id'            => 'required',
-            'cadastral_parcel_id'   => 'required',
-            'area'                  => 'required|numeric|min:0|not_in:0',
+            'name'              => 'required',
+            'culture'           => 'required',
+            'cadastral_parcel'  => 'required',
+            'tracking_type'     => 'required',
         ]);
-        $cadastral_parcel = CadastralParcel::find($request->cadastral_parcel_id);
-        if($cadastral_parcel->area < $request->area){
+        if(!FamilyFarm::find(session('familyFarm')['id'])->cadastralParcels->contains($request->cadastral_parcel)){
             return response()->json([
-                'errors' => [
-                    'cadastral_parcel_id' => [null],
-                    'area' => [null],
-                ],
-                'message' => 'Površina za obradu ne može biti veća od površine odabrane katastarske čestice.'
+                'message' => 'Dogodila se greška.'
             ], 422);
         }
         try {
             Matrix::create([
                 'name' => $request->name,
-                'culture_id' => $request->culture_id,
-                'cadastral_parcel_id' => $request->cadastral_parcel_id,
-                'area' => $request->area,
+                'culture_id' => $request->culture,
+                'cadastral_parcel_id' => $request->cadastral_parcel,
+                'tracking_type' => $request->tracking_type,
             ]);
         }catch (QueryException $e){
             if($e->getCode() == "23000"){

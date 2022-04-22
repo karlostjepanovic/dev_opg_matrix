@@ -3,13 +3,13 @@ export class Matrix {
     name = null;
     culture = {};
     cadastralParcel = {};
-    area = null;
+    trackingType = null;
     constructor() {
         this.id = null;
         this.name = null;
         this.culture = {};
         this.cadastralParcel = {};
-        this.area = null;
+        this.trackingType = null;
     }
     refresh(){
         return new Promise(async (resolve, reject) => {
@@ -18,7 +18,7 @@ export class Matrix {
                 this.name = response.data.name;
                 this.culture = response.data.culture;
                 this.cadastralParcel = response.data.cadastral_parcel;
-                this.area = response.data.area;
+                this.trackingType = response.data.tracking_type;
             }).catch(() => {
                 reject();
             });
@@ -32,7 +32,7 @@ export class Matrix {
                 this.name = response.data.name;
                 this.culture = response.data.culture;
                 this.cadastralParcel = response.data.cadastral_parcel;
-                this.area = response.data.area;
+                this.trackingType = response.data.tracking_type;
                 resolve(this);
             }).catch(() => {
                 reject();

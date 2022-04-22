@@ -9,6 +9,7 @@ use App\Http\Controllers\FamilyFarm\CadastralParcelController;
 use App\Http\Controllers\FamilyFarm\EmployeeController;
 use App\Http\Controllers\FamilyFarm\FamilyFarmCultureController;
 use App\Http\Controllers\FamilyFarm\Matrix\NoteController;
+use App\Http\Controllers\FamilyFarm\Matrix\OperationController;
 use App\Http\Controllers\FamilyFarm\MatrixController;
 use App\Http\Controllers\Token\TokenController;
 use App\Models\App\Culture;
@@ -123,6 +124,12 @@ Route::group(['middleware' => ['auth']], function () {
         // MATRICE
         Route::post('create-matrix', [MatrixController::class, 'createMatrix']);
         Route::group(["prefix" => "matrix"], function() {
+            // OPERACIJE
+            Route::post('get-operations', function () {
+                return Matrix::find(session('matrix')['id'])->operations()->orderBy('ordinal_number', 'desc')->get()->toArray();
+            });
+            Route::post('create-operation', [OperationController::class, 'createOperation']);
+
             // BILJEŠKE
             Route::post('get-notes', function () {
                 return Matrix::find(session('matrix')['id'])->notes()->orderBy('date', 'desc')->orderBy('created_at', 'desc')->get()->toArray();
