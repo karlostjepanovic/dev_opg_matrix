@@ -100,7 +100,7 @@ export default {
         },
     },
     created() {
-        axios.post("/admin/get-cultures").then((response) => {
+        axios.post("/admin/get-available-cultures").then((response) => {
             response.data.forEach(culture => {
                 this.appCultures.push(culture.name);
             });

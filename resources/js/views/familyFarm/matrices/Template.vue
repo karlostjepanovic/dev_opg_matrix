@@ -39,7 +39,7 @@
                     </router-link>
                 </li>
                 <li>
-                    <router-link :to="{name: ''}"
+                    <router-link :to="{name: 'settings'}"
                                  class="navigation-tab"
                                  :class="{'active' : this.$route.name === 'settings'}">
                         Postavke

@@ -1,5 +1,13 @@
 <template>
-    <modal title="Dodavanje novog sredstva" ref="modal" size="m">
+    <div class="container">
+        <div class="action">
+            <router-link :to="{name: 'appSupplies'}" class="button green smooth">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M19,7V11H5.83L9.41,7.41L8,6L2,12L8,18L9.41,16.58L5.83,13H21V7H19Z" />
+                </svg>
+                Odustani
+            </router-link>
+        </div>
         <form method="post" @submit.prevent="createFamilyFarm">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
@@ -82,6 +90,46 @@
                     <div class="error" v-if="errors && errors.description && errors.description[0]">{{errors.description[0]}}</div>
                 </div>
             </div>
+            <div class="form-section">
+                <div class="form-control">
+                    <label for="culture">Kulture:</label>
+                </div>
+                <div class="form-control w-3">
+                    <div class="field">
+                        <select class="input green"
+                                id="culture"
+                                @change="chooseCulture"
+                                v-model="culture">
+                            <option :value="null">--- odaberite kulturu ---</option>
+                            <option v-for="culture in appCultures"
+                                    :value="culture.id"
+                                    v-if="formData.cultures.filter(obj => {return obj.culture[0].id === culture.id;}).length === 0">
+                                {{culture.name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <table class="fixed" v-if="formData.cultures.length > 0">
+                    <thead>
+                        <tr>
+                            <th colspan="2"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(culture, i) in formData.cultures" :key="i" class="hover">
+                            <td>{{culture.culture[0].name}}</td>
+                            <td class="txt-right">
+                                <button type="button" class="button red" @click="removeCulture(i)">
+                                    <svg style="width:20px;height:20px" viewBox="0 0 24 24">
+                                        <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                    </svg>
+                                    Ukloni
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="form-section center">
                 <button
                     type="submit"
@@ -91,7 +139,7 @@
                 </button>
             </div>
         </form>
-    </modal>
+    </div>
 </template>
 
 <script>
@@ -100,25 +148,40 @@ export default {
     data(){
         return {
             loading: true,
+            appCultures: [],
+            culture: null,
             formData: {
                 name: null,
                 manufacturer: null,
                 operation_type: null,
                 measure_unit: null,
                 description: null,
+                cultures: []
             },
             message: null,
             errors: null
         }
     },
     methods: {
+        chooseCulture(){
+            let obj = this.culture;
+            obj = this.appCultures.filter(user => {
+                return user.id === obj;
+            }) || false;
+            if(obj !== false){
+                this.formData.cultures.push({
+                    culture: obj,
+                });
+            }
+            this.culture = null;
+        },
+        removeCulture(i){
+            this.formData.cultures.splice(i, 1);
+        },
         createFamilyFarm(){
             this.loading = true;
             axios.post("/admin/create-supply", this.formData).then((response) => {
-                this.$root.$emit('getAppSupplies', () => {
-                    this.$toast.success(response.data.success);
-                    this.$refs.modal.close();
-                });
+                this.$router.push({name: 'appSupplies'}).catch(() => {});
             }).catch((errors) => {
                 this.message = errors.response.data.message;
                 this.errors = errors.response.data.errors;
@@ -127,11 +190,23 @@ export default {
         }
     },
     created(){
-        this.loading = false;
+        axios.post("/admin/get-available-cultures").then((response) => {
+            this.appCultures = response.data;
+            this.loading = false;
+        }).catch(() => {
+            return this.$root.$emit('error');
+        });
     }
 }
 </script>
 
 <style scoped>
+.action {
+    text-align: right;
+    margin-bottom: 20px;
+}
 
+form {
+    padding: unset;
+}
 </style>

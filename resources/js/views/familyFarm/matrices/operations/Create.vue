@@ -24,7 +24,7 @@
             </div>
             <div class="form-section row">
                 <div class="form-control">
-                    <label for="unit_price" class="required">Jedinična cijena za tržište:</label>
+                    <label for="unit_price" class="required">Jedinična cijena za prodaju:</label>
                 </div>
                 <div class="form-control w-6">
                     <div class="field">

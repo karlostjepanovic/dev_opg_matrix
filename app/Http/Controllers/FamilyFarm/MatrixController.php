@@ -69,4 +69,45 @@ class MatrixController extends Controller
             'success' => 'Nova matrica je uspješno kreirana.'
         ], 200);
     }
+
+    public function lockMatrix(): JsonResponse
+    {
+        if(!FamilyFarm::find(session('familyFarm')['id'])->matrices->contains(session('matrix')['id'])){
+            return response()->json([
+                'message' => 'Dogodila se greška.'
+            ], 422);
+        }
+        try {
+            $matrix = Matrix::find(session('matrix')['id']);
+            $matrix->update([
+                'locked' => !$matrix->locked
+            ]);
+        }catch (QueryException $e){
+            return response()->json([
+                'message' => 'Dogodila se greška.'
+            ], 422);
+        }
+        return response()->json([
+            'success' => $matrix->locked ? 'Matrica je uspješno zaključana.' : 'Matrica je uspješno otključana'
+        ], 200);
+    }
+
+    public function deleteMatrix(): JsonResponse
+    {
+        if(!FamilyFarm::find(session('familyFarm')['id'])->matrices->contains(session('matrix')['id'])){
+            return response()->json([
+                'message' => 'Dogodila se greška.'
+            ], 422);
+        }
+        try {
+            Matrix::destroy(session('matrix')['id']);
+        }catch (QueryException $e){
+            return response()->json([
+                'message' => 'Nije moguće obrisati odabranu matricu'
+            ], 422);
+        }
+        return response()->json([
+            'success' => 'Matrica je uspješno obrisana!'
+        ], 200);
+    }
 }

@@ -18,7 +18,7 @@ use function response;
 class UserController extends Controller
 {
     /**
-     * Creating new user
+     * Kreiranje korisnika
      * @param Request $request
      * @return JsonResponse
      */
@@ -59,7 +59,7 @@ class UserController extends Controller
     }
 
     /**
-     * Editing user
+     * Uređivanje korisnika
      * @param $id
      * @param Request $request
      * @return JsonResponse
@@ -101,7 +101,7 @@ class UserController extends Controller
     }
 
     /**
-     * Set authenticator
+     * Postavljanje tokena
      * @param $id
      * @param Request $request
      * @return Application|ResponseFactory|Response|JsonResponse
@@ -126,7 +126,7 @@ class UserController extends Controller
     }
 
     /**
-     * Remove authenticator
+     * Uklanjanje tokena
      * @param $id
      * @return Application|ResponseFactory|JsonResponse|Response
      */
@@ -153,7 +153,7 @@ class UserController extends Controller
     }
 
     /**
-     * Reset user's password
+     * Resetiranje lozinke
      * @param $id
      * @return JsonResponse
      */
@@ -169,7 +169,7 @@ class UserController extends Controller
     }
 
     /**
-     * Changing password
+     * Promjena lozinke
      * @param Request $request
      * @return JsonResponse
      */
@@ -191,7 +191,7 @@ class UserController extends Controller
     }
 
     /**
-     * Updateing profile
+     * Uređivanje profila
      * @param Request $request
      * @return JsonResponse
      */
@@ -220,7 +220,7 @@ class UserController extends Controller
     }
 
     /**
-     * Deleting user
+     * Brisanje korisnika
      * @param $id
      * @return JsonResponse
      */

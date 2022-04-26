@@ -3,20 +3,19 @@
         <loading-overlay v-show="loading"></loading-overlay>
         <template v-if="!loading">
             <div class="section">
-                <button type="button" class="green" @click="createSupply">
+                <router-link class="button green" :to="{name: 'createSupply'}">
                     <svg style="width:20px;height:20px" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
                     </svg>
                     Dodaj sredstvo
-                </button>
+                </router-link>
             </div>
             <table v-if="supplies.length">
                 <thead>
                     <tr>
-                        <th>Naziv</th>
+                        <th>Sredstvo</th>
                         <th>Status</th>
                         <th width="30%">Opis</th>
-                        <th>Proizvođač</th>
                         <th>Mjerna jedinica</th>
                         <th width="35%">Kulture</th>
                         <th>Operacija</th>
@@ -25,8 +24,11 @@
                 </thead>
                 <tbody>
                 <tr v-for="supply in supplies" :key="supply.id" class="hover">
-                    <td>{{ supply.name }}</td>
-                    <td>
+                    <td class="top">
+                        <div class="txt-bold">{{ supply.name }}</div>
+                        <div class="txt-small">{{supply.manufacturer}}</div>
+                    </td>
+                    <td class="top">
                         <svg style="width:16px;height:16px" viewBox="0 0 24 24" class="txt-green" v-if="supply.active">
                             <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
                         </svg>
@@ -34,8 +36,26 @@
                             <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                         </svg>
                     </td>
-                    <td>
+                    <td class="top"><pre class="txt-small">{{supply.description}}</pre></td>
+                    <td class="top">{{supply.measure_unit}}</td>
+                    <td class="top">
+                        <div class="cultures-container">
+                            <template v-for="culture in supply.cultures">
+                                <div class="culture-wrap">
+                                    <div class="culture-name">{{culture.name}}</div>
+                                    <div class="remove" @click="removeCulture(culture)">
+                                        <svg style="width:16px;height:16px" viewBox="0 0 24 24">
+                                            <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </td>
+                    <td class="top">{{supply.operation_type}}</td>
+                    <td class="top">
                         <context>
+                            <div class="item" @click="addCulture(supply)">Dodaj kulturu</div>
                             <div class="item" @click="editSupply(supply)">Uredi</div>
                             <div class="item txt-red" @click="deleteSupply(supply)">Obriši</div>
                         </context>
@@ -68,13 +88,19 @@ export default {
                 });
             });
         },
-        createSupply(){
+        addCulture(supply){
             this.$modals.push({
-                box: require("./Create").default,
-                props: { },
+                box: require("./AddCulture").default,
+                props: { supply },
             });
         },
-        /*editSupply(supply){
+        removeCulture(culture){
+            this.$modals.push({
+                box: require("./RemoveCulture").default,
+                props: { culture },
+            });
+        },
+        editSupply(supply){
             this.$modals.push({
                 box: require("./Edit").default,
                 props: { supply },
@@ -85,7 +111,7 @@ export default {
                 box: require("./Delete").default,
                 props: { supply },
             });
-        },*/
+        },
     },
     created() {
         this.getAppSupplies().then(() => {
@@ -111,5 +137,42 @@ export default {
 .container {
     position: relative;
     min-height: 80px;
+}
+
+.cultures-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.culture-wrap {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 3px 3px 10px;
+    width: fit-content;
+    border-radius: 20px;
+    border: 1px dashed var(--green);
+    background: white;
+    user-select: none;
+}
+
+.culture-wrap .culture-name {
+    font-size: 80%;
+    margin-right: 5px;
+}
+
+.culture-wrap .remove {
+    color: var(--red);
+    cursor: pointer;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.culture-wrap .remove:hover {
+    background: var(--light-red);
 }
 </style>

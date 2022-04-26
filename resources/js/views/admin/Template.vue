@@ -25,7 +25,7 @@
             <li>
                 <router-link :to="{name: 'appSupplies'}"
                              class="navigation-tab"
-                             :class="{'active' : this.$route.name === 'appSupplies'}">
+                             :class="{'active' : this.$route.name === 'appSupplies' || this.$route.name === 'createSupply'}">
                     Sredstva
                 </router-link>
             </li>

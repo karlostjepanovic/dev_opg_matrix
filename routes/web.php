@@ -3,11 +3,14 @@
 use App\Http\Controllers\App\CultureController;
 use App\Http\Controllers\App\FamilyFarmController;
 use App\Http\Controllers\App\SupplyController;
+use App\Http\Controllers\App\SupplyCultureController;
 use App\Http\Controllers\App\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FamilyFarm\AmountController;
 use App\Http\Controllers\FamilyFarm\CadastralParcelController;
 use App\Http\Controllers\FamilyFarm\EmployeeController;
 use App\Http\Controllers\FamilyFarm\FamilyFarmCultureController;
+use App\Http\Controllers\FamilyFarm\FamilyFarmSupplyController;
 use App\Http\Controllers\FamilyFarm\Matrix\NoteController;
 use App\Http\Controllers\FamilyFarm\Matrix\OperationController;
 use App\Http\Controllers\FamilyFarm\MatrixController;
@@ -16,7 +19,7 @@ use App\Models\App\Culture;
 use App\Models\App\FamilyFarm;
 use App\Models\App\Supply;
 use App\Models\App\User;
-use App\Models\FamilyFarm\Employee;
+use App\Models\FamilyFarm\FamilyFarmSupply;
 use App\Models\FamilyFarm\Matrix;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +35,11 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+/*
+ * Za OPG-ove treba napraviti da se modu dodavati sredstva i unositi zalihe koje su nabavljene.
+ * Kod dodavanja procesa za operaciju napraviti da se dinamički mogu odabrati zalihe koje su korištene
+ * */
 
 Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -104,17 +112,21 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('get-cultures', function () {
             return Culture::orderBy('name')->get()->toArray();
         });
+        Route::post('get-available-cultures', [CultureController::class, 'getAvailableCultures']);
         Route::post('create-culture', [CultureController::class, 'createCulture']);
         Route::post('edit-culture/{id}', [CultureController::class, 'editCulture']);
         Route::post('delete-culture/{id}', [CultureController::class, 'deleteCulture']);
 
         // SREDSTVA
         Route::post('get-supplies', function () {
-            return Supply::orderBy('name')->get()->toArray();
+            return Supply::orderBy('name')->with('cultures', function($query){
+                return $query->orderBy('name');
+            })->get()->toArray();
         });
+        Route::post('get-available-supplies', [SupplyController::class, 'getAvailableSupplies']);
         Route::post('create-supply', [SupplyController::class, 'createSupply']);
-        Route::post('supply/{id}/add-culture', [SupplyController::class, 'addCulture']);
-        Route::post('supply/{id}/remove-culture', [SupplyController::class, 'removeCulture']);
+        Route::post('supply/{id}/add-culture', [SupplyCultureController::class, 'createSupplyCulture']);
+        Route::post('supply/remove-culture/{id}', [SupplyCultureController::class, 'deleteSupplyCulture']);
         Route::post('edit-supply/{id}', [SupplyController::class, 'editSupply']);
         Route::post('delete-supply/{id}', [SupplyController::class, 'deleteSupply']);
     });
@@ -123,12 +135,17 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(["prefix" => "family-farm"], function() {
         // MATRICE
         Route::post('create-matrix', [MatrixController::class, 'createMatrix']);
+        Route::post('lock-matrix', [MatrixController::class, 'lockMatrix']);
+        Route::post('delete-matrix', [MatrixController::class, 'deleteMatrix']);
         Route::group(["prefix" => "matrix"], function() {
             // OPERACIJE
             Route::post('get-operations', function () {
                 return Matrix::find(session('matrix')['id'])->operations()->orderBy('ordinal_number', 'desc')->get()->toArray();
             });
             Route::post('create-operation', [OperationController::class, 'createOperation']);
+            Route::post('edit-operation/{id}', [OperationController::class, 'editOperation']);
+            Route::post('delete-operation/{id}', [OperationController::class, 'deleteOperation']);
+            Route::post('move-operation/{id}/{direction}', [OperationController::class, 'moveOperation']);
 
             // BILJEŠKE
             Route::post('get-notes', function () {
@@ -161,5 +178,25 @@ Route::group(['middleware' => ['auth']], function () {
         });
         Route::post('add-culture', [FamilyFarmCultureController::class, 'addCulture']);
         Route::post('remove-culture/{id}', [FamilyFarmCultureController::class, 'removeCulture']);
+
+        // SREDSTVA I ZALIHE
+        Route::post('get-supplies', function () {
+            return FamilyFarm::find(session('familyFarm')['id'])->supplies(function($query){
+                return $query->orderBy('name');
+            })->get()->toArray();
+        });
+        Route::post('add-supply', [FamilyFarmSupplyController::class, 'addSupply']);
+        Route::post('remove-supply/{id}', [FamilyFarmSupplyController::class, 'removeSupply']);
+        Route::group(["prefix" => "supply"], function() {
+            Route::post('{id}/show', function ($id) {
+                return FamilyFarmSupply::where('id', $id)->where('family_farm_id', session('familyFarm')['id'])->get()->first();
+            });
+            Route::post('{id}/get-amounts', function ($id) {
+                return FamilyFarmSupply::find($id)->amounts()->orderBy('created_at', 'desc')->get()->toArray();
+            });
+            Route::post('{id}/create-amount', [AmountController::class, 'createAmount']);
+            Route::post('edit-amount/{id}', [AmountController::class, 'editAmount']);
+            Route::post('delete-amount/{id}', [AmountController::class, 'deleteAmount']);
+        });
     });
 });

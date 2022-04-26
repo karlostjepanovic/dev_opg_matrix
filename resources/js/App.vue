@@ -21,7 +21,7 @@ export default {
             this.$loading = true;
             // TODO: dodati da se obrišu svi popup prozori
             setTimeout(() => {
-                return window.location.href = "/";
+                //return window.location.href = "/";
                 //this.$router.push({name: 'index'}).catch(() => {});
             }, 1000);
         }

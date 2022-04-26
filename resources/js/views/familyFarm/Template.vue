@@ -26,7 +26,7 @@
                     </svg>
                     <div class="label">Kulture</div>
                 </router-link>
-                <router-link :to="{name: ''}" :class="{'active' : this.$route.path.includes('supplies')}">
+                <router-link :to="{name: 'showSupplies'}" :class="{'active' : this.$route.path.includes('supplies') || this.$route.path.includes('supply')}">
                     <svg style="width:20px;height:20px" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z" />
                     </svg>

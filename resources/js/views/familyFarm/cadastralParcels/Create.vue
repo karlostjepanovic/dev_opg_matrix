@@ -12,7 +12,7 @@
                         <input type="text"
                                class="green"
                                :class="{'invalid' : errors && errors.number}"
-                               id="name"
+                               id="number"
                                v-model="formData.number">
                     </div>
                     <div class="error" v-if="errors && errors.number && errors.number[0]">{{errors.number[0]}}</div>

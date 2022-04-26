@@ -11,7 +11,16 @@ use Illuminate\Http\Request;
 class CultureController extends Controller
 {
     /**
-     * Createing culture
+     * Popis dostupnih kultura
+     * @return mixed
+     */
+    public function getAvailableCultures()
+    {
+        return Culture::where('active', true)->orderBy('name')->get()->toArray();
+    }
+
+    /**
+     * Kreiranje kulture
      * @param Request $request
      * @return JsonResponse
      */
@@ -41,7 +50,7 @@ class CultureController extends Controller
     }
 
     /**
-     * Editing culture
+     * Uređivanje kulture
      * @param $id
      * @param Request $request
      * @return JsonResponse
@@ -75,7 +84,7 @@ class CultureController extends Controller
     }
 
     /**
-     * Deleting culture
+     * Brisanje kulture
      * @param $id
      * @return JsonResponse
      */

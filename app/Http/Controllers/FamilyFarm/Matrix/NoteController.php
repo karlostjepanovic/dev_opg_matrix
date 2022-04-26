@@ -7,12 +7,13 @@ use App\Models\App\FamilyFarm;
 use App\Models\FamilyFarm\Matrix;
 use App\Models\FamilyFarm\Matrix\Note;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
-    public function createNote(Request $request)
+    public function createNote(Request $request): JsonResponse
     {
         $request->validate([
             'date'  => 'required|date_format:d.m.Y.',
@@ -40,7 +41,7 @@ class NoteController extends Controller
         ], 200);
     }
 
-    public function editNote($id, Request $request)
+    public function editNote($id, Request $request): JsonResponse
     {
         $request->validate([
             'date'  => 'required|date_format:d.m.Y.',
@@ -73,7 +74,7 @@ class NoteController extends Controller
         ], 200);
     }
 
-    public function deleteNote($id, Request $request)
+    public function deleteNote($id, Request $request): JsonResponse
     {
         if(!Matrix::find(session('matrix')['id'])->notes->contains($id)){
             return response()->json([

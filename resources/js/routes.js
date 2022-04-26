@@ -48,6 +48,11 @@ export const routes = [
                 path: 'supplies',
                 component: require('./views/admin/supplies/Index').default,
             },
+            {
+                name: 'createSupply',
+                path: 'create-supply',
+                component: require('./views/admin/supplies/Create').default,
+            },
         ],
     },
 
@@ -77,6 +82,11 @@ export const routes = [
                         path: 'notes',
                         component: require('./views/familyFarm/matrices/notes/Index').default,
                     },
+                    {
+                        name: 'settings',
+                        path: 'settings',
+                        component: require('./views/familyFarm/matrices/settings/Index').default,
+                    },
                 ]
             },
             /* DJELATNICI */
@@ -96,6 +106,17 @@ export const routes = [
                 name: 'showCultures',
                 path: 'cultures',
                 component: require('./views/familyFarm/cultures/Index').default,
+            },
+            /* SREDSTVA I ZALIHE */
+            {
+                name: 'showSupplies',
+                path: 'supplies',
+                component: require('./views/familyFarm/supplies/Index').default,
+            },
+            {
+                name: 'showSupplyAmounts',
+                path: 'supply/amounts/:id',
+                component: require('./views/familyFarm/supplies/amounts/Index').default,
             },
         ],
     },

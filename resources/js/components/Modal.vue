@@ -73,8 +73,7 @@ export default {
     line-height: 40px;
     height: 40px;
     text-transform: uppercase;
-    background: var(--dark-green);
-    color: #fff;
+    background: white;
     overflow: hidden;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -82,17 +81,18 @@ export default {
     align-items: center;
     justify-content: space-between;
     user-select: none;
+    border-bottom: 1px solid var(--green);
 }
 
 .modal-title {
     font-size: 100%;
-    color: white;
+    color: var(--dark-green);
+    font-weight: bold;
     margin-left: 10px;
 }
 
 .modal-close {
-    background: var(--dark-green);
-    color: white;
+    color: var(--green);
     width: 30px;
     height: 30px;
     cursor: pointer;
@@ -104,7 +104,8 @@ export default {
 }
 
 .modal-close:hover {
-    background: var(--green);
+    background: var(--light-green);
+    color: var(--dark-green);
 }
 
 .modal-body-wrap {

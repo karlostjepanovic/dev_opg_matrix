@@ -4,15 +4,18 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Models\App\FamilyFarm;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class FamilyFarmController extends Controller
 {
     /**
-     * Get available family farms
+     * Dohvaćanje dostupnih OPG-ova
      * @return array
      */
     public function getAvailableFamilyFarms(): array
@@ -28,7 +31,7 @@ class FamilyFarmController extends Controller
     }
 
     /**
-     * Creating new family farm
+     * Kreiranje OPG-a
      * @param Request $request
      * @return JsonResponse
      */
@@ -72,7 +75,7 @@ class FamilyFarmController extends Controller
     }
 
     /**
-     * Editing family farm
+     * Uređivanje OPG-a
      * @param $id
      * @param Request $request
      * @return JsonResponse
@@ -120,7 +123,7 @@ class FamilyFarmController extends Controller
     }
 
     /**
-     * Deleting family farm
+     * Brisanje OPG-a
      * @param $id
      * @return JsonResponse
      */
@@ -144,6 +147,11 @@ class FamilyFarmController extends Controller
         ], 200);
     }
 
+    /**
+     * Odabir OPG-a i postavljanje njegovog ID-a u sesiju
+     * @param $id
+     * @return Application|ResponseFactory|Response
+     */
     public function setFamilyFarm($id)
     {
         session()->forget('familyFarm');

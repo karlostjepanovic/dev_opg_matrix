@@ -3,6 +3,7 @@
 namespace App\Models\App;
 
 use App\Models\FamilyFarm\CadastralParcel;
+use App\Models\FamilyFarm\FamilyFarmSupply;
 use App\Models\FamilyFarm\Matrix;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -67,5 +68,17 @@ class FamilyFarm extends Model
             'family_farm_id',
             'culture_id')
             ->withPivot(Schema::getColumnListing('family_farm_cultures'));
+    }
+
+    // sredstva
+    public function supplies()
+    {
+        return $this->hasMany(FamilyFarmSupply::class);
+        /*return $this->belongsToMany(
+            Supply::class,
+            'family_farm_supplies',
+            'family_farm_id',
+            'supply_id')
+            ->withPivot(Schema::getColumnListing('family_farm_supplies'));*/
     }
 }

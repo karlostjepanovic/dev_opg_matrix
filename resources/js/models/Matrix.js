@@ -4,6 +4,7 @@ export class Matrix {
     culture = {};
     cadastralParcel = {};
     trackingType = null;
+    locked = false;
     constructor() {
         this.id = null;
         this.name = null;
@@ -19,6 +20,7 @@ export class Matrix {
                 this.culture = response.data.culture;
                 this.cadastralParcel = response.data.cadastral_parcel;
                 this.trackingType = response.data.tracking_type;
+                this.locked = response.data.locked;
             }).catch(() => {
                 reject();
             });
@@ -33,6 +35,7 @@ export class Matrix {
                 this.culture = response.data.culture;
                 this.cadastralParcel = response.data.cadastral_parcel;
                 this.trackingType = response.data.tracking_type;
+                this.locked = response.data.locked;
                 resolve(this);
             }).catch(() => {
                 reject();

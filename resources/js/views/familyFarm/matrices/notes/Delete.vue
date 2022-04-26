@@ -1,6 +1,6 @@
 <template>
     <modal title="Brisanje bilješke" ref="modal" size="s">
-        <form method="post" @submit.prevent="removeNote">
+        <form method="post" @submit.prevent="deleteNote">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
             <div class="form-section">
@@ -30,7 +30,7 @@ export default {
         }
     },
     methods: {
-        removeNote(){
+        deleteNote(){
             this.loading = true;
             axios.post("/family-farm/matrix/delete-note/"+this.note.id).then((response) => {
                 this.$root.$emit('getNotes', () => {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\App\FamilyFarm;
 use App\Models\FamilyFarm\CadastralParcel;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CadastralParcelController extends Controller
@@ -80,7 +81,7 @@ class CadastralParcelController extends Controller
         ], 200);
     }
 
-    public function deleteCadastralParcel($id)
+    public function deleteCadastralParcel($id): JsonResponse
     {
         if(!FamilyFarm::find(session('familyFarm')['id'])->cadastralParcels->contains($id)){
             return response()->json([
@@ -90,9 +91,15 @@ class CadastralParcelController extends Controller
         try {
             CadastralParcel::destroy($id);
         }catch (QueryException $e){
-            return response()->json([
-                'message' => 'Nije moguće obrisati odabranu katastarsku česticu'
-            ], 422);
+            if($e->getCode() == "23000"){
+                return response()->json([
+                    'message' => 'Nije moguće obrisati odabranu katastarsku česticu.'
+                ], 422);
+            }else{
+                return response()->json([
+                    'message' => 'Dogodila se greška.'
+                ], 422);
+            }
         }
         return response()->json([
             'success' => 'Katastarska čestica je uspješno obrisana!'

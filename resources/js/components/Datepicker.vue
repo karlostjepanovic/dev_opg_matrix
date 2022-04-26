@@ -5,16 +5,17 @@
             type="text"
             :class="this.setClass"
             @click="open($event)"
+            ref="input"
             :value="value"/>
         <div class="datepicker" ref="datepicker" v-show="visible">
             <div class="header">
-                <div class="arrow">
+                <div class="arrow" @click.prevent="changeMonth('previous')">
                     <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
                     </svg>
                 </div>
                 <div class="title">{{months[monthNumber - 1]+', '+yearNumber+'.'}}</div>
-                <div class="arrow">
+                <div class="arrow" @click.prevent="changeMonth('next')">
                     <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
                     </svg>
@@ -85,12 +86,12 @@ export default {
     methods: {
         open(e){
             this.visible = true;
-            const item = e.target;
             this.generate();
             this.update();
             window.addEventListener('click', (e) => {
-                if (e.target !== item){
-                    this.visible = false;
+                const el = this.$refs.datepicker || false;
+                if (el && !this.$refs.datepicker.contains(e.target) && e.target !== this.$refs.input){
+                    return this.visible = false;
                 }
             });
         },
@@ -108,8 +109,8 @@ export default {
             if(prefixDays === 0) { prefixDays = 6; }else{ prefixDays--; }
             this.monthNumber = (datetime.getMonth() + 1);
             this.yearNumber = datetime.getFullYear();
-            //this.previousMonth = $this.addMonths(datetime, -1).toString();
-            //this.nextMonth = $this.addMonths(datetime, 2).toString();
+            this.previousMonth = this.addMonths(datetime, -1).toString();
+            this.nextMonth = this.addMonths(datetime, 1).toString();
             this.prefixDays = prefixDays;
             this.lastDay = new Date(datetime.getFullYear(), datetime.getMonth()+1, 0).getDate();
             this.today = this.formatDate(new Date);
@@ -120,17 +121,26 @@ export default {
             return [parts[2], parts[1], parts[0]].join('-');
         },
         formatDate(date) {
-            let d = new Date(date),
-                month = '' + (d.getMonth() + 1),
-                day = '' + d.getDate(),
-                year = d.getFullYear();
-
-            if (month.length < 2)
+            let d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            let year = d.getFullYear();
+            if (month.length < 2){
                 month = '0' + month;
-            if (day.length < 2)
+            }
+            if (day.length < 2){
                 day = '0' + day;
-
+            }
             return [year, month, day].join('-');
+        },
+        addMonths(date, months) {
+            let cd = date.getDate();
+            let d = new Date(date);
+            d.setMonth(d.getMonth() + months);
+            if (d.getDate() !== cd) {
+                d.setDate(0);
+            }
+            return d;
         },
         update(){
             for(let i = 1; i <= this.prefixDays; i++){
@@ -147,9 +157,24 @@ export default {
                 });
             }
         },
+        changeMonth(value){
+            if(value === 'previous'){
+                this.dateValue = this.previousMonth;
+            }else if(value === 'next'){
+                this.dateValue = this.nextMonth;
+            }else{
+                return this.visible = false;
+            }
+            this.generate();
+            this.update();
+        },
         set(date){
             this.dateValue = date;
             this.$emit('input', date);
+            this.close();
+        },
+        close(){
+            this.visible = false;
         }
     }
 }
