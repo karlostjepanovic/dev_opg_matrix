@@ -27,7 +27,7 @@ class FamilyFarm extends Model
 
     protected $appends = ['owner'];
     public function getOwnerAttribute() {
-        return $this->attributes['owner'] = $this->owner()->get()->first();
+        return $this->owner()->get()->first();
     }
 
     // opg pripada vlasniku

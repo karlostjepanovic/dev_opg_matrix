@@ -43,5 +43,23 @@ class SuppliesTableSeeder extends Seeder
             'operation_type' => 'zaštita',
             'measure_unit' => 'L',
         ]);
+        Supply::create([
+            'name' => 'Sjeme kukuruza',
+            'manufacturer' => 'Sjemenko d.o.o.',
+            'operation_type' => 'sjetva',
+            'measure_unit' => 'kom.',
+        ]);
+        Supply::create([
+            'name' => 'Sadnica pšenice',
+            'manufacturer' => 'Sjemenko d.o.o.',
+            'operation_type' => 'sjetva',
+            'measure_unit' => 'kom.',
+        ]);
+        Supply::create([
+            'name' => 'Sadnica jabuke',
+            'manufacturer' => 'Sjemenko d.o.o.',
+            'operation_type' => 'sjetva',
+            'measure_unit' => 'kom.',
+        ]);
     }
 }

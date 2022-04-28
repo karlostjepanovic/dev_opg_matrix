@@ -11,7 +11,7 @@
                     <div class="field">
                         <datepicker
                             :setClass="errors && errors.date ? 'invalid' : 'green'"
-                            id="grade_date"
+                            id="date"
                             v-model="formData.date"></datepicker>
                     </div>
                     <div class="error" v-if="errors && errors.date && errors.date[0]">{{errors.date[0]}}</div>

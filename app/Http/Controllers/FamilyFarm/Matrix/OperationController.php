@@ -17,8 +17,8 @@ class OperationController extends Controller
     {
         $request->validate([
             'operation_type'    => 'required',
-            'unit_price'        => 'required|numeric|min:0|not_in:0',
-            'tracking'          => 'required|numeric|min:0|not_in:0',
+            'unit_price'        => 'required|numeric|gt:0',
+            'tracking'          => 'required|numeric|gt:0',
         ]);
 
         $ordinal_number = Operation::where('matrix_id', '=', session('matrix')['id'])->max('ordinal_number');
@@ -95,17 +95,26 @@ class OperationController extends Controller
 
     public function editOperation($id, Request $request): JsonResponse
     {
+        $matrix = Matrix::find(session('matrix')['id']);
+        $operation = Operation::find($id);
         $request->validate([
-            'unit_price'        => 'required|numeric|min:0|not_in:0',
-            'tracking'          => 'required|numeric|min:0|not_in:0',
+            'unit_price'        => 'required|numeric|gt:0',
+            'tracking'          => 'required|numeric|gt:0',
         ]);
-        if(!Matrix::find(session('matrix')['id'])->operations->contains($id)){
+        if($operation->total_tracking > $request->tracking){
+            return response()->json([
+                'errors' => [
+                    'amount' => [null],
+                ],
+                'message' => ($matrix->tracking_type === 'p' ? 'Površina' : 'Količina')." za praćenje ne može biti manja od one koja je već evidentirana za ovu operaciju."
+            ], 422);
+        }
+        if(!$matrix->operations->contains($id)){
             return response()->json([
                 'message' => 'Dogodila se greška.'
             ], 422);
         }
         try {
-            $operation = Operation::find($id);
             $operation->update([
                 'unit_price' => $request->unit_price,
                 'tracking' => $request->tracking,
@@ -118,6 +127,28 @@ class OperationController extends Controller
         }
         return response()->json([
             'success' => 'Promjene su uspješno spremljene.'
+        ], 200);
+    }
+
+    public function endOperation($id): JsonResponse
+    {
+        if(!Matrix::find(session('matrix')['id'])->operations->contains($id)){
+            return response()->json([
+                'message' => 'Dogodila se greška.'
+            ], 422);
+        }
+        try {
+            $operation = Operation::find($id);
+            $operation->update([
+                'ended' => !$operation->ended
+            ]);
+        }catch (QueryException $e){
+            return response()->json([
+                'message' => 'Dogodila se greška.'
+            ], 422);
+        }
+        return response()->json([
+            'success' => $operation->locked ? 'Operacija je uspješno pokrenuta.' : 'Operacija je uspješno završena'
         ], 200);
     }
 

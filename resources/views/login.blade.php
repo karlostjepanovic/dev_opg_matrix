@@ -41,7 +41,7 @@
                     Karlo Stjepanović © {{date('Y.')}}
                 </div>
             </form>
-            @if(1)
+            @if(0)
                 <div class="info-wrap">
                     Poštovani korisnici,<br>aplikacija <strong>OPGmatrix</strong> neće biti dostupna u petak, <strong>22. travnja 2022.</strong> godine, u razdoblju od <strong>15:00h</strong> do <strong>16:00h</strong> zbog radova na održavanju sustava.<br>Zahvaljujemo se na razumijevanju!
                 </div>

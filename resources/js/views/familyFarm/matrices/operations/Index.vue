@@ -30,14 +30,24 @@
                                     <template v-if="matrix.trackingType === 'k'">jd.</template>
                                 </div>
                             </div>
-                            <div class="progress">
-                                <div class="percentage">30 %</div>
-                                <progress value="30" max="100"></progress>
+                            <div class="info">
+                                <div class="txt-bold">Status</div>
+                                <div class="txt-small">
+                                    <template v-if="operation.ended">završeno</template>
+                                    <span v-else class="txt-red">nije završeno</span>
+                                </div>
+                            </div>
+                            <div class="progress txt-small">
+                                <div class="percentage">
+                                    <span class="txt-bold">Obrađeno: </span>
+                                    {{calculatePercentage(operation.total_tracking, operation.tracking)}} %
+                                </div>
+                                <progress :value="operation.total_tracking" :max="operation.tracking"></progress>
                             </div>
                         </div>
                         <div class="options" v-if="!matrix.locked">
                             <context>
-                                <router-link :to="{}" class="item">Dodaj proces</router-link>
+                                <router-link :to="{name: 'createProcess', params: {id: operation.id}}" class="item" v-if="!operation.ended">Dodaj proces</router-link>
                                 <div class="item"
                                      @click="moveOperation(operation, 'up')"
                                      v-if="operationIndex > 0">
@@ -48,13 +58,72 @@
                                         v-if="operationIndex < operations.length - 1">
                                     Pomakni operaciju dolje
                                 </div>
+                                <div class="item" @click="endOperation(operation)">{{operation.ended ? 'Otvori' : 'Završi'}} operaciju</div>
                                 <div class="item" @click="editOperation(operation)">Uredi</div>
                                 <div class="item txt-red" @click="deleteOperation(operation)">Obriši</div>
                             </context>
                         </div>
                     </div>
                     <div class="operation-body">
-                        <div class="txt-bold">Ne postoji ni jedan proces za prikaz!</div>
+                        <template v-if="operation.processes.length > 0">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th width="20%">Proces</th>
+                                        <th>Korištena sredstva</th>
+                                        <th>Meteorološko vrijeme</th>
+                                        <th>Bilješka/napomena</th>
+                                        <th width="15%">Upisao</th>
+                                        <th v-if="!matrix.locked"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="process in operation.processes" class="hover" :key="process.id">
+                                    <td class="top">
+                                        <div class="txt-bold">{{moment(process.date).format('DD.MM.YYYY.')}}</div>
+                                        <div class="txt-small">
+                                            <span class="txt-bold">trajanje: </span>
+                                            {{ process.duration }} h
+                                        </div>
+                                        <div class="txt-small">
+                                            <span class="txt-bold">obrađena {{matrix.trackingType === 'p' ? 'površina' : 'količina'}}: </span>
+                                            {{ process.tracking_value }}
+                                            <template v-if="matrix.trackingType === 'p'">m<sup>2</sup></template>
+                                            <template v-if="matrix.trackingType === 'k'">jd.</template>
+                                        </div>
+                                    </td>
+                                    <td class="top">
+                                        <template v-for="process_amount in process.process_amounts">
+                                            <div class="amount-container">
+                                                <div class="supply">
+                                                    <div class="txt-bold">{{process_amount.amount.family_farm_supply.supply.name}}</div>
+                                                    <div>{{process_amount.amount.family_farm_supply.supply.manufacturer}}</div>
+                                                </div>
+                                                <div class="used-amount">
+                                                    {{process_amount.used_amount+' '+process_amount.amount.family_farm_supply.supply.measure_unit}}
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </td>
+                                    <td class="top">{{ process.weather }}</td>
+                                    <td class="top">
+                                        <pre class="txt-small">{{ process.note }}</pre>
+                                    </td>
+                                    <td class="top txt-small">
+                                        {{process.user.firstname + ' ' + process.user.lastname}}
+                                        <br>
+                                        ({{moment(process.updated_at).format('DD.MM.YYYY., H:mm:ss')}})
+                                    </td>
+                                    <td class="top" v-if="!matrix.locked">
+                                        <context>
+                                            <div class="item txt-red" @click="deleteProcess(process)">Obriši</div>
+                                        </context>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </template>
+                        <div class="txt-bold" v-else>Ne postoji ni jedan proces za prikaz!</div>
                     </div>
                 </div>
             </template>
@@ -109,12 +178,27 @@ export default {
                 props: { matrixOperation },
             });
         },
+        endOperation(matrixOperation){
+            this.$modals.push({
+                box: require("./End").default,
+                props: { matrixOperation },
+            });
+        },
         deleteOperation(matrixOperation){
             this.$modals.push({
                 box: require("./Delete").default,
                 props: { matrixOperation },
             });
         },
+        deleteProcess(process){
+            this.$modals.push({
+                box: require("./processes/Delete").default,
+                props: { process },
+            });
+        },
+        calculatePercentage(a, b){
+            return Math.round((a*100)/b)
+        }
     },
     computed: {
         matrix: function () {
@@ -195,5 +279,40 @@ export default {
 
 .options {
     padding: 10px;
+}
+
+progress {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+}
+progress::-webkit-progress-value {
+    -webkit-appearance: none;
+    background: var(--green);
+    border-radius: 10px;
+}
+
+progress::-webkit-progress-bar {
+    background: var(--light-gray);
+    border-radius: 10px;
+}
+
+.amount-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border: 1px dashed var(--green);
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 90%;
+}
+
+.amount-container:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+.amount-container .used-amount {
+    width: 50px;
+    text-align: right;
 }
 </style>

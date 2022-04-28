@@ -15,7 +15,7 @@ class CreateProcessAmountsTable extends Migration
     {
         Schema::create('process_amounts', function (Blueprint $table) {
             $table->id();
-            $table->integer('amount');
+            $table->float('used_amount');
             $table->bigInteger('amount_id')->unsigned();
             $table->foreign('amount_id')
                 ->references('id')

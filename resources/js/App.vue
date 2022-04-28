@@ -19,7 +19,7 @@ export default {
         error() {
             this.$toast.error("Dogodila se greška!");
             this.$loading = true;
-            // TODO: dodati da se obrišu svi popup prozori
+            this.$modals = [];
             setTimeout(() => {
                 //return window.location.href = "/";
                 //this.$router.push({name: 'index'}).catch(() => {});

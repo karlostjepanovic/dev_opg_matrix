@@ -22,10 +22,10 @@ class Matrix extends Model
 
     protected $appends = ['culture', 'cadastral_parcel'];
     public function getCultureAttribute() {
-        return $this->attributes['culture'] = $this->culture()->get()->first();
+        return $this->culture()->get()->first();
     }
     public function getCadastralParcelAttribute() {
-        return $this->attributes['cadastral_parcel'] = $this->cadastralParcel()->get()->first();
+        return $this->cadastralParcel()->get()->first();
     }
 
     public function cadastralParcel()

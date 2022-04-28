@@ -21,8 +21,8 @@ class AmountController extends Controller
         }
         $request->validate([
             'bill_number'   => 'required',
-            'amount'        => 'required|numeric|integer|min:0|not_in:0',
-            'unit_price'    => 'required|numeric|min:0|not_in:0',
+            'amount'        => 'required|numeric|integer|gt:0',
+            'unit_price'    => 'required|numeric|gt:0',
         ]);
         try {
             Amount::create([
@@ -44,14 +44,21 @@ class AmountController extends Controller
 
     public function editAmount($id, Request $request): JsonResponse
     {
-        // TODO: kad se napravi da se zaliha evidentira uz proces onda napraviti provjeru da nova količina ne smije biti manja o dtrenutno potrošene količine
+        $amount = Amount::find($id);
         $request->validate([
             'bill_number'   => 'required',
-            'amount'        => 'required|numeric|integer|min:0|not_in:0',
-            'unit_price'    => 'required|numeric|min:0|not_in:0',
+            'amount'        => 'required|numeric|integer|gt:0',
+            'unit_price'    => 'required|numeric|gt:0',
         ]);
+        if($amount->used_amounts > $request->amount){
+            return response()->json([
+                'errors' => [
+                    'amount' => [null],
+                ],
+                'message' => 'Količina ne može biti manja od one koja je već utrošena za ovu zalihu.'
+            ], 422);
+        }
         try {
-            $amount = Amount::find($id);
             $amount->update([
                 'bill_number' => $request->bill_number,
                 'amount' => $request->amount,
@@ -60,7 +67,7 @@ class AmountController extends Controller
             ]);
         }catch (QueryException $e){
             return response()->json([
-                'message' => 'Dogodila se greška.'
+                'message' => 'Dogodila se greška.'.$e->getMessage()
             ], 422);
         }
         return response()->json([
@@ -74,7 +81,7 @@ class AmountController extends Controller
             Amount::destroy($id);
         }catch (QueryException $e){
             return response()->json([
-                'message' => 'Dogodila se greška.'
+                'message' => 'Nije moguće obrisati odabranu zalihu.'
             ], 422);
         }
         return response()->json([

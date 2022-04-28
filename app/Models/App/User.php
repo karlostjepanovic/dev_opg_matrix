@@ -28,10 +28,10 @@ class User extends Authenticatable
 
     protected $appends = ['full_name', 'family_farm_admin_role'];
     public function getFullNameAttribute() {
-        return $this->attributes['full_name'] = $this->firstname." ".$this->lastname;
+        return $this->firstname." ".$this->lastname;
     }
     public function getFamilyFarmAdminRoleAttribute() {
-        return $this->attributes['family_farm_admin_role'] = $this->familyFarms()->where('family_farm_id', '=', session('familyFarm')['id'])->first()['pivot']['admin_role'];
+        return $this->familyFarms()->where('family_farm_id', '=', session('familyFarm')['id'])->first()['pivot']['admin_role'];
     }
 
     // korisnik je djelatnik u opg-ovima

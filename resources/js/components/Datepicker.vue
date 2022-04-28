@@ -191,7 +191,7 @@ export default {
 
 .datepicker {
     position: absolute;
-    z-index: 5;
+    z-index: 5555;
     top: -40%;
     left: -10%;
     border-radius: 4px;

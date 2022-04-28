@@ -17,7 +17,7 @@ class CadastralParcelController extends Controller
         $request->validate([
             'number'            => 'required',
             'arcode'            => 'required',
-            'area'              => 'required|numeric|min:0|not_in:0',
+            'area'              => 'required|numeric|gt:0',
             'community'         => 'required',
         ]);
         try {
@@ -54,7 +54,7 @@ class CadastralParcelController extends Controller
         $request->validate([
             'number'            => 'required',
             'arcode'            => 'required',
-            'area'              => 'required|numeric|min:0|not_in:0',
+            'area'              => 'required|numeric|gt:0',
             'community'         => 'required',
         ]);
         try {

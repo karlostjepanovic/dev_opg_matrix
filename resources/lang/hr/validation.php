@@ -158,6 +158,7 @@ return [
     'attributes' => [
         'address'               => 'adresa',
         'amount'                => 'količina',
+        'amounts.*.used_amount' => 'utrošena količina',
         'arcode'                => 'arkôd',
         'area'                  => 'površina',
         'bill_number'           => 'broj računa',

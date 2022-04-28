@@ -15,16 +15,23 @@ class Operation extends Model
         'operation_type',
         'unit_price',
         'tracking',
+        'ended',
         'matrix_id',
         'user_id'
     ];
 
-    protected $appends = ['matrix', 'user'];
+    protected $appends = ['matrix', 'user', 'total_tracking'];
     public function getMatrixAttribute() {
-        return $this->attributes['matrix'] = $this->matrix()->get()->first();
+        return $this->matrix()->get()->first();
     }
     public function getUserAttribute() {
-        return $this->attributes['user'] = $this->user()->get()->first();
+        return $this->user()->get()->first();
+    }
+    public function getProcessesAttribute() {
+        //return $this->processes()->get()->toArray();
+    }
+    public function getTotalTrackingAttribute() {
+        return $this->processes()->sum('tracking_value');
     }
 
     // matrica
@@ -37,5 +44,11 @@ class Operation extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // procesi
+    public function processes()
+    {
+        return $this->hasMany(Process::class)->orderBy('date', 'desc')->orderBy('created_at', 'desc');
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Models\FamilyFarm;
 
 use App\Models\App\Supply;
+use App\Models\FamilyFarm\Matrix\Process;
+use App\Models\FamilyFarm\Matrix\ProcessAmount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,21 +17,25 @@ class FamilyFarmSupply extends Model
         'family_farm_id'
     ];
 
-    protected $appends = ['supply', 'amounts', 'available_amounts'];
+    protected $appends = ['supply', 'available_amounts', 'used_amounts'];
     public function getSupplyAttribute()
     {
-        return $this->attributes['supply'] = $this->supply()->get()->first();
+        return $this->supply()->get()->first();
     }
     public function getAmountsAttribute(): array
     {
-        return $this->attributes['amounts'] = $this->amounts()->get()->toArray();
+        //return $this->amounts()->get()->toArray();
+    }
+    public function getUsedAmountsAttribute(): int
+    {
+        return $this->usedAmounts()->sum('used_amount');
     }
     public function getAvailableAmountsAttribute(): int
     {
-        // TODO: oduzeti s utrošenom kako bi se dobila dostupna zaliha
-        return $this->attributes['available_amounts'] = $this->amounts()->sum('amount');
+        return $this->amounts()->sum('amount') - $this->used_amounts;
     }
 
+    // sredstvo
     public function supply()
     {
         return $this->belongsTo(Supply::class);
@@ -39,5 +45,11 @@ class FamilyFarmSupply extends Model
     public function amounts()
     {
         return $this->hasMany(Amount::class)->orderBy('created_at', 'desc');
+    }
+
+    // korišteno u procesima
+    public function usedAmounts()
+    {
+        return $this->hasManyThrough(ProcessAmount::class, Amount::class);
     }
 }

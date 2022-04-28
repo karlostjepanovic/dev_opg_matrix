@@ -62,5 +62,9 @@ class FamilyFarmCulturesTableSeeder extends Seeder
             'family_farm_id' => 2,
             'culture_id' => 6
         ]);
+        FamilyFarmCulture::create([
+            'family_farm_id' => 2,
+            'culture_id' => 7
+        ]);
     }
 }

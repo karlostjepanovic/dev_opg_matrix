@@ -78,9 +78,19 @@ export const routes = [
                         component: require('./views/familyFarm/matrices/operations/Index').default,
                     },
                     {
+                        name: 'createProcess',
+                        path: 'operation/:id/create-process',
+                        component: require('./views/familyFarm/matrices/operations/processes/Create').default,
+                    },
+                    {
                         name: 'notes',
                         path: 'notes',
                         component: require('./views/familyFarm/matrices/notes/Index').default,
+                    },
+                    {
+                        name: 'reports',
+                        path: 'reports',
+                        component: require('./views/familyFarm/matrices/reports/Index').default,
                     },
                     {
                         name: 'settings',
@@ -117,6 +127,12 @@ export const routes = [
                 name: 'showSupplyAmounts',
                 path: 'supply/amounts/:id',
                 component: require('./views/familyFarm/supplies/amounts/Index').default,
+            },
+            /* IZVJEŠTAJI */
+            {
+                name: 'showReports',
+                path: 'reports',
+                component: require('./views/familyFarm/reports/Index').default,
             },
         ],
     },

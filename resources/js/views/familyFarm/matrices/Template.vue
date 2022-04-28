@@ -20,7 +20,7 @@
                 <li>
                     <router-link :to="{name: 'operations'}"
                                  class="navigation-tab"
-                                 :class="{'active' : this.$route.name === 'operations'}">
+                                 :class="{'active' : this.$route.name === 'operations' || this.$route.name === 'createProcess'}">
                         Operacije
                     </router-link>
                 </li>
@@ -32,7 +32,7 @@
                     </router-link>
                 </li>
                 <li>
-                    <router-link :to="{name: ''}"
+                    <router-link :to="{name: 'reports'}"
                                  class="navigation-tab"
                                  :class="{'active' : this.$route.name === 'reports'}">
                         Izvještaji

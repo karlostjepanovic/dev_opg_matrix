@@ -181,6 +181,7 @@ export default {
         createFamilyFarm(){
             this.loading = true;
             axios.post("/admin/create-supply", this.formData).then((response) => {
+                this.$toast.success(response.data.success);
                 this.$router.push({name: 'appSupplies'}).catch(() => {});
             }).catch((errors) => {
                 this.message = errors.response.data.message;

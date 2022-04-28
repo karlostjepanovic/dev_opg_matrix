@@ -10,9 +10,12 @@ use App\Http\Controllers\FamilyFarm\AmountController;
 use App\Http\Controllers\FamilyFarm\CadastralParcelController;
 use App\Http\Controllers\FamilyFarm\EmployeeController;
 use App\Http\Controllers\FamilyFarm\FamilyFarmCultureController;
+use App\Http\Controllers\FamilyFarm\FamilyFarmReportsController;
 use App\Http\Controllers\FamilyFarm\FamilyFarmSupplyController;
+use App\Http\Controllers\FamilyFarm\Matrix\MatrixReportsController;
 use App\Http\Controllers\FamilyFarm\Matrix\NoteController;
 use App\Http\Controllers\FamilyFarm\Matrix\OperationController;
+use App\Http\Controllers\FamilyFarm\Matrix\ProcessController;
 use App\Http\Controllers\FamilyFarm\MatrixController;
 use App\Http\Controllers\Token\TokenController;
 use App\Models\App\Culture;
@@ -21,6 +24,7 @@ use App\Models\App\Supply;
 use App\Models\App\User;
 use App\Models\FamilyFarm\FamilyFarmSupply;
 use App\Models\FamilyFarm\Matrix;
+use App\Models\FamilyFarm\Matrix\Operation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -140,12 +144,31 @@ Route::group(['middleware' => ['auth']], function () {
         Route::group(["prefix" => "matrix"], function() {
             // OPERACIJE
             Route::post('get-operations', function () {
-                return Matrix::find(session('matrix')['id'])->operations()->orderBy('ordinal_number', 'desc')->get()->toArray();
+                return Matrix::find(session('matrix')['id'])
+                    ->operations()
+                    ->orderBy('ordinal_number', 'desc')
+                    ->with('processes', function ($query){
+                        return $query->with('processAmounts', function ($query){
+                            return $query->with('amount', function ($query){
+                                return $query->with('familyFarmSupply');
+                            });
+                        });
+                    })
+                    ->get()->toArray();
             });
             Route::post('create-operation', [OperationController::class, 'createOperation']);
             Route::post('edit-operation/{id}', [OperationController::class, 'editOperation']);
+            Route::post('end-operation/{id}', [OperationController::class, 'endOperation']);
             Route::post('delete-operation/{id}', [OperationController::class, 'deleteOperation']);
             Route::post('move-operation/{id}/{direction}', [OperationController::class, 'moveOperation']);
+            Route::group(["prefix" => "operation"], function() {
+                Route::post('{id}/show', function ($id) {
+                    return Operation::where('id', $id)->where('matrix_id', session('matrix')['id'])->get()->first();
+                });
+                Route::post('{id}/get-available-supplies', [ProcessController::class, 'getAvailableSupplies']);
+                Route::post('{id}/create-process', [ProcessController::class, 'createProcess']);
+                Route::post('delete-process/{id}', [ProcessController::class, 'deleteProcess']);
+            });
 
             // BILJEŠKE
             Route::post('get-notes', function () {
@@ -154,6 +177,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('create-note', [NoteController::class, 'createNote']);
             Route::post('edit-note/{id}', [NoteController::class, 'editNote']);
             Route::post('delete-note/{id}', [NoteController::class, 'deleteNote']);
+
+            // IZVJEŠTAJI
+            Route::group(["prefix" => "reports"], function() {
+                Route::post('get-income', [MatrixReportsController::class, 'getIncome']);
+            });
         });
 
         // DJELATNICI
@@ -181,15 +209,13 @@ Route::group(['middleware' => ['auth']], function () {
 
         // SREDSTVA I ZALIHE
         Route::post('get-supplies', function () {
-            return FamilyFarm::find(session('familyFarm')['id'])->supplies(function($query){
-                return $query->orderBy('name');
-            })->get()->toArray();
+            return FamilyFarm::find(session('familyFarm')['id'])->supplies()->get()->toArray();
         });
         Route::post('add-supply', [FamilyFarmSupplyController::class, 'addSupply']);
         Route::post('remove-supply/{id}', [FamilyFarmSupplyController::class, 'removeSupply']);
         Route::group(["prefix" => "supply"], function() {
             Route::post('{id}/show', function ($id) {
-                return FamilyFarmSupply::where('id', $id)->where('family_farm_id', session('familyFarm')['id'])->get()->first();
+                return FamilyFarmSupply::where('id', $id)->where('family_farm_id', session('familyFarm')['id'])->with('amounts')->get()->first();
             });
             Route::post('{id}/get-amounts', function ($id) {
                 return FamilyFarmSupply::find($id)->amounts()->orderBy('created_at', 'desc')->get()->toArray();
@@ -197,6 +223,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('{id}/create-amount', [AmountController::class, 'createAmount']);
             Route::post('edit-amount/{id}', [AmountController::class, 'editAmount']);
             Route::post('delete-amount/{id}', [AmountController::class, 'deleteAmount']);
+        });
+
+        // IZVJEŠTAJI
+        Route::group(["prefix" => "reports"], function() {
+            Route::post('generate', [FamilyFarmReportsController::class, 'generate']);
         });
     });
 });

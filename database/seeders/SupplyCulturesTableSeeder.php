@@ -167,5 +167,17 @@ class SupplyCulturesTableSeeder extends Seeder
             'supply_id' => 4,
             'culture_id' => 31,
         ]);
+        SupplyCulture::create([
+            'supply_id' => 5,
+            'culture_id' => 1,
+        ]);
+        SupplyCulture::create([
+            'supply_id' => 6,
+            'culture_id' => 2,
+        ]);
+        SupplyCulture::create([
+            'supply_id' => 7,
+            'culture_id' => 7,
+        ]);
     }
 }

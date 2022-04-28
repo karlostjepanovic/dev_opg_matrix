@@ -24,6 +24,7 @@
                     <th>Broj računa</th>
                     <th>Količina</th>
                     <th colspan="2">Utrošeno</th>
+                    <th>Preostalo</th>
                     <th>Jedinična cijena</th>
                     <th>Ukupna cijena</th>
                     <th width="20%">Posljednja izmjena</th>
@@ -31,13 +32,17 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="amount in supply.amounts" :key="amount.id" class="hover">
+                <tr v-for="amount in supply.amounts"
+                    :key="amount.id"
+                    class="hover"
+                    v-bind:class="{'not-available' : calculatePercentage(amount.used_amounts, amount.amount) === 100}">
                     <td>{{ amount.bill_number }}</td>
                     <td>{{ amount.amount + ' ' + supply.supply.measure_unit }}</td>
-                    <td class="gray">0 {{ supply.supply.measure_unit }}</td>
-                    <td class="gray">0%</td>
+                    <td class="gray">{{amount.used_amounts}} {{ supply.supply.measure_unit }}</td>
+                    <td class="gray">{{calculatePercentage(amount.used_amounts, amount.amount)}} %</td>
+                    <td>{{ amount.available_amounts + ' ' + supply.supply.measure_unit }}</td>
                     <td>{{ amount.unit_price }} HRK / {{ supply.supply.measure_unit }}</td>
-                    <td>{{ amount.unit_price * amount.amount }} HRK</td>
+                    <td>{{ Math.round(amount.unit_price * amount.amount) }} HRK</td>
                     <td class="top txt-small">
                         {{amount.user.firstname + ' ' + amount.user.lastname}}
                         <br>
@@ -96,11 +101,18 @@ export default {
                 props: { supply: this.supply, amount },
             });
         },
+        calculatePercentage(a, b){
+            return Math.round((a*100)/b)
+        }
     },
     created() {
         axios.post("/family-farm/supply/"+this.$route.params.id+"/show").then((response) => {
-            this.supply = response.data;
-            this.loading = false;
+            if(!response.data){
+                return this.$root.$emit('error');
+            }else{
+                this.supply = response.data;
+                this.loading = false;
+            }
         }).catch(() => {
             return this.$root.$emit('error');
         });
@@ -129,7 +141,17 @@ export default {
     margin-bottom: 20px;
 }
 
-.gray {
-    background: var(--light-gray);
+*:not(.not-available) > .gray {
+    background: #e6eced;
+}
+
+.not-available {
+    background: repeating-linear-gradient(
+        45deg,
+        #f6f8f9,
+        #f6f8f9 10px,
+        #e7edee 10px,
+        #e7edee 20px
+    )!important;
 }
 </style>

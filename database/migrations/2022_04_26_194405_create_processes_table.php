@@ -17,7 +17,7 @@ class CreateProcessesTable extends Migration
             $table->id();
             $table->date('date');
             $table->integer('duration')->unsigned();
-            $table->float('area');
+            $table->float('tracking_value');
             $table->string('weather')->nullable();
             $table->text('note')->nullable();
             $table->bigInteger('operation_id')->unsigned();

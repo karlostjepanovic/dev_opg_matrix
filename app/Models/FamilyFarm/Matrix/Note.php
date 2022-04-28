@@ -20,10 +20,10 @@ class Note extends Model
 
     protected $appends = ['matrix', 'user'];
     public function getMatrixAttribute() {
-        return $this->attributes['matrix'] = $this->matrix()->get()->first();
+        return $this->matrix()->get()->first();
     }
     public function getUserAttribute() {
-        return $this->attributes['user'] = $this->user()->get()->first();
+        return $this->user()->get()->first();
     }
 
     // matrica

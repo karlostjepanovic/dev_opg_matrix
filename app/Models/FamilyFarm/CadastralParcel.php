@@ -20,7 +20,7 @@ class CadastralParcel extends Model
 
     protected $appends = ['full_name'];
     public function getFullNameAttribute() {
-        return $this->attributes['full_name'] = $this->number." - ".$this->arcode;
+        return $this->number." - ".$this->arcode;
     }
 
     // katastarska čestica pripada opg-u

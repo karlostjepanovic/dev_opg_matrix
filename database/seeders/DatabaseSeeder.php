@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(EmployeesTableSeeder::class);
         $this->call(CadastralParcelsTableSeeder::class);
         $this->call(FamilyFarmCulturesTableSeeder::class);
+        $this->call(MatricesTableSeeder::class);
     }
 }

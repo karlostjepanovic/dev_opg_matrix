@@ -19,6 +19,7 @@ class CreateOperationsTable extends Migration
             $table->string('operation_type');
             $table->float('unit_price');
             $table->float('tracking')->nullable();
+            $table->boolean('ended')->default(false);
             $table->bigInteger('matrix_id')->unsigned();
             $table->foreign('matrix_id')
                 ->references('id')
