@@ -70,15 +70,22 @@ class FamilyFarm extends Model
             ->withPivot(Schema::getColumnListing('family_farm_cultures'));
     }
 
+    // sredstva iz OPG-a
+    public function familyFarmSupplies()
+    {
+        return $this->hasMany(FamilyFarmSupply::class)->with('supply', function($query){
+            return $query->orderBy('name');
+        });
+    }
+
     // sredstva
     public function supplies()
     {
-        return $this->hasMany(FamilyFarmSupply::class);
-        /*return $this->belongsToMany(
+        return $this->belongsToMany(
             Supply::class,
             'family_farm_supplies',
             'family_farm_id',
             'supply_id')
-            ->withPivot(Schema::getColumnListing('family_farm_supplies'));*/
+            ->withPivot(Schema::getColumnListing('family_farm_supplies'));
     }
 }

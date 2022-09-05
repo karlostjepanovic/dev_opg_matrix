@@ -3,19 +3,19 @@
         <form method="post" @submit.prevent="search">
             <loading-overlay v-show="loading"></loading-overlay>
             <div class="message" v-if="message">{{message}}</div>
-            <div class="form-section row">
+            <div class="form-section">
                 <div class="form-control">
-                    <label for="oib" class="required">OIB:</label>
+                    <label for="username" class="required">Korisničko ime:</label>
                 </div>
-                <div class="form-control w-8">
+                <div class="form-control">
                     <div class="field">
                         <input type="text"
                                class="green"
-                               :class="{'invalid' : errors && errors.oib}"
-                               id="oib"
-                               v-model="formData.oib">
+                               :class="{'invalid' : errors && errors.username}"
+                               id="username"
+                               v-model="formData.username">
                     </div>
-                    <div class="error" v-if="errors && errors.oib && errors.oib[0]">{{errors.oib[0]}}</div>
+                    <div class="error" v-if="errors && errors.username && errors.username[0]">{{errors.username[0]}}</div>
                 </div>
             </div>
             <div class="form-section center">
@@ -32,12 +32,12 @@
 
 <script>
 export default {
-    oib: "Search",
+    username: "Search",
     data(){
         return {
             loading: false,
             formData: {
-                oib: null,
+                username: null,
             },
             message: null,
             errors: null
@@ -46,7 +46,7 @@ export default {
     methods: {
         search(){
             this.loading = true;
-            axios.post("/search-user/oib", this.formData).then((response) => {
+            axios.post("/search-user/username", this.formData).then((response) => {
                 if(response.data.id){
                     this.$modals.push({
                         box: require("./Add").default,
@@ -54,8 +54,8 @@ export default {
                     });
                     this.$refs.modal.close();
                 }else{
-                    this.message = "Korisnik s ovim OIB-om ne postoji!";
-                    this.formData.oib = null;
+                    this.message = "Korisnik s ovim korisničkim imenom ne postoji!";
+                    this.formData.username = null;
                     this.loading = false;
                 }
             }).catch((errors) => {

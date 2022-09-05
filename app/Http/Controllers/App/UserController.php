@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
+use App\Mail\UserPasswordEmail;
 use App\Models\App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 use function response;
 
@@ -28,24 +30,35 @@ class UserController extends Controller
             'firstname'     => 'required',
             'lastname'      => 'required',
             'username'      => 'required',
-            'oib'           => 'required|numeric|digits:11',
-            'email'         => 'nullable|email',
+            'email'         => 'required|email',
             'phone'         => 'nullable',
         ]);
         try {
+            $password = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'),1, 6);
             User::create([
                 'firstname' => $request->firstname,
                 'lastname' => $request->lastname,
                 'username' => $request->username,
-                'password' => Hash::make("1234"),
-                'oib' => $request->oib,
+                'password' => Hash::make($password),
                 'email' => $request->email,
                 'phone' => $request->phone,
             ]);
+            $details = [
+                'firstname' => $request->firstname,
+                'lastname' => $request->lastname,
+                'username' => $request->username,
+                'password' => $password,
+            ];
+            Mail::to($request->email)->send(new UserPasswordEmail($details));
+            if(Mail::failures()){
+                return response()->json([
+                    'message' => 'Unesena adresa e-pošte je nevažeća.'
+                ], 422);
+            }
         }catch (QueryException $e){
             if($e->getCode() === "23000"){
                 return response()->json([
-                    'message' => 'Korisnik s ovim korisničkim imenom ili OIB-om već postoji.'
+                    'message' => 'Korisnik s ovim korisničkim imenom ili adresom e-pošte već postoji.'
                 ], 422);
             }else{
                 return response()->json([
@@ -70,8 +83,7 @@ class UserController extends Controller
             'firstname'     => 'required',
             'lastname'      => 'required',
             'username'      => 'required',
-            'oib'           => 'required|numeric|digits:11',
-            'email'         => 'nullable|email',
+            'email'         => 'required|email',
             'phone'         => 'nullable',
         ]);
         try {
@@ -80,14 +92,13 @@ class UserController extends Controller
                 'firstname' => $request->firstname,
                 'lastname' => $request->lastname,
                 'username' => $request->username,
-                'oib' => $request->oib,
                 'email' => $request->email,
                 'phone' => $request->phone,
             ]);
         }catch (QueryException $e){
             if($e->getCode() === "23000"){
                 return response()->json([
-                    'message' => 'Korisnik s ovim korisničkim imenom ili OIB-om već postoji.'
+                    'message' => 'Korisnik s ovim korisničkim imenom ili adresom e-pošte već postoji.'
                 ], 422);
             }else{
                 return response()->json([
@@ -159,10 +170,23 @@ class UserController extends Controller
      */
     public function resetPassword($id): JsonResponse
     {
+        $password = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'),1, 6);
         $user = User::find($id);
         $user->update([
-            'password' => Hash::make("1234")
+            'password' => Hash::make($password)
         ]);
+        $details = [
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'username' => $user->username,
+            'password' => $password,
+        ];
+        Mail::to($user->email)->send(new UserPasswordEmail($details));
+        if(Mail::failures()){
+            return response()->json([
+                'message' => 'Unesena adresa e-pošte je nevažeća.'
+            ], 422);
+        }
         return response()->json([
             'success' => 'Korisniku je lozinka uspješno resetirana.'
         ]);
@@ -199,14 +223,12 @@ class UserController extends Controller
     {
         $request->validate([
             'phone'                         => 'nullable',
-            'email'                         => 'nullable|email',
             'font_size'                     => 'required',
         ]);
         try {
             $user = User::find(Auth::id());
             $user->update([
                 'phone' => $request->phone,
-                'email' => $request->email,
                 'font_size' => $request->font_size,
             ]);
         }catch (QueryException $e){

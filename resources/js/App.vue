@@ -21,7 +21,7 @@ export default {
             this.$loading = true;
             this.$modals = [];
             setTimeout(() => {
-                //return window.location.href = "/";
+                return window.location.href = "/";
                 //this.$router.push({name: 'index'}).catch(() => {});
             }, 1000);
         }
@@ -48,7 +48,7 @@ export default {
         this.$root.$on('verifyOTP', (resolve) => {
             this.$modals.push({
                 box: require("./components/OTP").default,
-                props: { resolve },
+                props: { resolve }
             });
         });
 

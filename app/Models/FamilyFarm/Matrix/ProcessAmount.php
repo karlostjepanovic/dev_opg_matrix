@@ -26,4 +26,10 @@ class ProcessAmount extends Model
     {
         return $this->belongsTo(Amount::class);
     }
+
+    // proces
+    public function process()
+    {
+        return $this->belongsTo(Process::class);
+    }
 }

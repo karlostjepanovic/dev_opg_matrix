@@ -14,10 +14,10 @@
             </div>
             <div class="form-section row">
                 <div class="form-control">
-                    <label>OIB:</label>
+                    <label>Adresa e-pošte:</label>
                 </div>
                 <div class="form-control w-7">
-                    <div class="field">{{user.oib}}</div>
+                    <div class="field">{{user.email}}</div>
                 </div>
             </div>
             <div class="form-section row">

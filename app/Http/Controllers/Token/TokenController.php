@@ -13,7 +13,7 @@ class TokenController extends Controller
     {
         $ga = new GoogleAuthenticator();
         $code = $ga->createSecret();
-        $qr = $ga->getQRCodeGoogleUrl('educa', $code);
+        $qr = $ga->getQRCodeGoogleUrl('OPGmatrix', $code);
         return response()->json([
             'qr' => $qr,
             'code' => $code,

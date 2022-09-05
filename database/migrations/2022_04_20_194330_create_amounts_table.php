@@ -15,7 +15,7 @@ class CreateAmountsTable extends Migration
     {
         Schema::create('amounts', function (Blueprint $table) {
             $table->id();
-            $table->string('bill_number')->unique();
+            $table->string('bill_number');
             $table->integer('amount');
             $table->float('unit_price');
             $table->bigInteger('family_farm_supply_id')->unsigned();

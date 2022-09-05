@@ -191,13 +191,13 @@ export default {
 
 .datepicker {
     position: absolute;
-    z-index: 5555;
+    z-index: 55;
     top: -40%;
     left: -10%;
     border-radius: 4px;
     width: 350px;
     overflow: hidden;
-    box-shadow: 0 0 30px rgb(0 0 0 / 80%);
+    box-shadow: 0 0 10px rgb(0 0 0 / 70%);
     user-select: none;
 }
 

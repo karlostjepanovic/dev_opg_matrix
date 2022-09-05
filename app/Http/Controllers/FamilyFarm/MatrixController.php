@@ -14,7 +14,7 @@ class MatrixController extends Controller
 {
     public function getAvailableMatrices(): array
     {
-        $familyFarm = FamilyFarm::find(session('familyFarm')['id']);
+        $familyFarm = FamilyFarm::find(session('familyFarm') ? session('familyFarm')['id'] : null);
         if($familyFarm){
             return $familyFarm->matrices()->orderBy('name')->get()->toArray();
         }else{

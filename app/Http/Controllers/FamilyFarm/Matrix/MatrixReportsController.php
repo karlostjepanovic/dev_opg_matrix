@@ -4,7 +4,9 @@ namespace App\Http\Controllers\FamilyFarm\Matrix;
 
 use App\Http\Controllers\Controller;
 use App\Models\App\FamilyFarm;
+use App\Models\App\Supply;
 use App\Models\FamilyFarm\Matrix\Operation;
+use App\Models\FamilyFarm\Matrix\ProcessAmount;
 use Illuminate\Http\JsonResponse;
 
 class MatrixReportsController extends Controller

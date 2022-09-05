@@ -19,8 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('lastname');
             $table->string('username')->unique();
             $table->string('password');
-            $table->string('oib', 11)->unique();
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             $table->string('phone')->nullable();
             $table->boolean('admin_role')->default(false);
             $table->string('otp_token')->nullable();

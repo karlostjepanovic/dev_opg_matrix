@@ -27,7 +27,7 @@ class ProcessController extends Controller
         $operation = Operation::find($id);
         $matrix = Matrix::find(session('matrix')['id']);
         return response()->json(FamilyFarm::find(session('familyFarm')['id'])
-            ->supplies()
+            ->familyFarmSupplies()
             ->with('amounts')
             ->has('amounts')
             ->whereHas('supply', function ($query) use ($matrix, $operation) {

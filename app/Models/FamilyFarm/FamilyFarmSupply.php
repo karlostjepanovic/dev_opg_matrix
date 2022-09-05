@@ -17,10 +17,10 @@ class FamilyFarmSupply extends Model
         'family_farm_id'
     ];
 
-    protected $appends = ['supply', 'available_amounts', 'used_amounts'];
+    protected $appends = ['available_amounts', 'used_amounts'];
     public function getSupplyAttribute()
     {
-        return $this->supply()->get()->first();
+        //return $this->supply()->get()->first();
     }
     public function getAmountsAttribute(): array
     {

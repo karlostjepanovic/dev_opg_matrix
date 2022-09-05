@@ -16,24 +16,10 @@ class FamilyFarmsTableSeeder extends Seeder
     {
         FamilyFarm::create([
             'name' => 'OPG Test',
-            'address' => 'Zagreb',
-            'place' => 'Zagreb',
-            'oib' => '68895955464',
-            'owner_id' => 2,
-        ]);
-        FamilyFarm::create([
-            'name' => 'Testni OPG Zagreb - istok',
-            'address' => 'Zagreb',
-            'place' => 'Zagreb',
-            'oib' => '18265931218',
+            'address' => 'Borisa Papandopula 1',
+            'place' => 'Sesvete',
+            'oib' => '66321597535',
             'owner_id' => 1,
-        ]);
-        FamilyFarm::create([
-            'name' => 'Testni OPG Zagreb - zapad',
-            'address' => 'Zagreb',
-            'place' => 'Zagreb',
-            'oib' => '88961614461',
-            'owner_id' => 5,
         ]);
     }
 }

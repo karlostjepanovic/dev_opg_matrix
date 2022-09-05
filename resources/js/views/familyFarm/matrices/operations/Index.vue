@@ -69,57 +69,41 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th width="20%">Proces</th>
+                                        <th width="10%">Datum</th>
+                                        <th width="10%">Trajanje</th>
+                                        <th width="15%">Obrađena {{matrix.trackingType === 'p' ? 'površina' : 'količina'}}</th>
                                         <th>Korištena sredstva</th>
-                                        <th>Meteorološko vrijeme</th>
-                                        <th>Bilješka/napomena</th>
                                         <th width="15%">Upisao</th>
                                         <th v-if="!matrix.locked"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="process in operation.processes" class="hover" :key="process.id">
-                                    <td class="top">
-                                        <div class="txt-bold">{{moment(process.date).format('DD.MM.YYYY.')}}</div>
-                                        <div class="txt-small">
-                                            <span class="txt-bold">trajanje: </span>
-                                            {{ process.duration }} h
-                                        </div>
-                                        <div class="txt-small">
-                                            <span class="txt-bold">obrađena {{matrix.trackingType === 'p' ? 'površina' : 'količina'}}: </span>
+                                    <tr v-for="process in operation.processes" class="hover" :key="process.id">
+                                        <td class="top">{{moment(process.date).format('DD.MM.YYYY.')}}</td>
+                                        <td class="top">{{ process.duration }} h</td>
+                                        <td class="top">
                                             {{ process.tracking_value }}
                                             <template v-if="matrix.trackingType === 'p'">m<sup>2</sup></template>
                                             <template v-if="matrix.trackingType === 'k'">jd.</template>
-                                        </div>
-                                    </td>
-                                    <td class="top">
-                                        <template v-for="process_amount in process.process_amounts">
-                                            <div class="amount-container">
-                                                <div class="supply">
-                                                    <div class="txt-bold">{{process_amount.amount.family_farm_supply.supply.name}}</div>
-                                                    <div>{{process_amount.amount.family_farm_supply.supply.manufacturer}}</div>
-                                                </div>
-                                                <div class="used-amount">
-                                                    {{process_amount.used_amount+' '+process_amount.amount.family_farm_supply.supply.measure_unit}}
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </td>
-                                    <td class="top">{{ process.weather }}</td>
-                                    <td class="top">
-                                        <pre class="txt-small">{{ process.note }}</pre>
-                                    </td>
-                                    <td class="top txt-small">
-                                        {{process.user.firstname + ' ' + process.user.lastname}}
-                                        <br>
-                                        ({{moment(process.updated_at).format('DD.MM.YYYY., H:mm:ss')}})
-                                    </td>
-                                    <td class="top" v-if="!matrix.locked">
-                                        <context>
-                                            <div class="item txt-red" @click="deleteProcess(process)">Obriši</div>
-                                        </context>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td class="top">
+                                            <template v-for="(process_amount, i) in process.process_amounts">
+                                                {{process_amount.amount.family_farm_supply.supply.name}}
+                                                <template v-if="i + 1 < process.process_amounts.length">, </template>
+                                            </template>
+                                        </td>
+                                        <td class="top txt-small">
+                                            {{process.user.firstname + ' ' + process.user.lastname}}
+                                            <br>
+                                            ({{moment(process.updated_at).format('DD.MM.YYYY., H:mm:ss')}})
+                                        </td>
+                                        <td class="top">
+                                            <context>
+                                                <div class="item" @click="showDetails(matrix, process)">Detalji</div>
+                                                <div class="item txt-red" @click="deleteProcess(process)" v-if="!matrix.locked">Obriši</div>
+                                            </context>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </template>
@@ -188,6 +172,12 @@ export default {
             this.$modals.push({
                 box: require("./Delete").default,
                 props: { matrixOperation },
+            });
+        },
+        showDetails(matrix, process){
+            this.$modals.push({
+                box: require("./processes/Details").default,
+                props: { matrix, process },
             });
         },
         deleteProcess(process){

@@ -23,18 +23,18 @@
                     </div>
                     <div class="form-section row">
                         <div class="form-control">
-                            <label>OIB:</label>
-                        </div>
-                        <div class="form-control w-6">
-                            <div class="field">{{loggedUser.oib}}</div>
-                        </div>
-                    </div>
-                    <div class="form-section row">
-                        <div class="form-control">
                             <label>Korisničko ime:</label>
                         </div>
                         <div class="form-control w-6">
                             <div class="field">{{loggedUser.username}}</div>
+                        </div>
+                    </div>
+                    <div class="form-section row">
+                        <div class="form-control">
+                            <label>Adresa e-pošte:</label>
+                        </div>
+                        <div class="form-control w-6">
+                            <div class="field">{{loggedUser.email}}</div>
                         </div>
                     </div>
                     <div class="form-section row">
@@ -50,21 +50,6 @@
                                        v-model="formData.phone">
                             </div>
                             <div class="error" v-if="errors && errors.phone && errors.phone[0]">{{errors.phone[0]}}</div>
-                        </div>
-                    </div>
-                    <div class="form-section row">
-                        <div class="form-control">
-                            <label for="email">Adresa e-pošte:</label>
-                        </div>
-                        <div class="form-control w-6">
-                            <div class="field">
-                                <input type="text"
-                                       class="green"
-                                       :class="{'invalid' : errors && errors.email}"
-                                       id="email"
-                                       v-model="formData.email">
-                            </div>
-                            <div class="error" v-if="errors && errors.email && errors.email[0]">{{errors.email[0]}}</div>
                         </div>
                     </div>
                     <div class="form-section row">
@@ -129,7 +114,6 @@ export default {
             loading: true,
             formData: {
                 phone: null,
-                email: null,
                 font_size: null,
             },
             message: null,
@@ -158,7 +142,6 @@ export default {
     mounted() {
         this.$loggedUser.refresh().then((response) => {
             this.formData.phone = response.phone;
-            this.formData.email = response.email;
             this.formData.font_size = response.fontSize;
             this.loading = false;
         }).catch(() => {

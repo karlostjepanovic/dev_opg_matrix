@@ -67,7 +67,7 @@ class AmountController extends Controller
             ]);
         }catch (QueryException $e){
             return response()->json([
-                'message' => 'Dogodila se greška.'.$e->getMessage()
+                'message' => 'Dogodila se greška.'
             ], 422);
         }
         return response()->json([

@@ -16,7 +16,6 @@
                         <th>Korisnik</th>
                         <th>Adresa e-pošte</th>
                         <th>Telefon</th>
-                        <th>OIB</th>
                         <th>Administrator<br>sustava</th>
                         <th>Token</th>
                         <th>Posljednja prijava</th>
@@ -29,9 +28,8 @@
                             <div class="txt-bold">{{ user.firstname+' '+user.lastname }}</div>
                             <div class="txt-small">{{ user.username }}</div>
                         </td>
-                        <td>{{ user.email ? user.email : '---' }}</td>
+                        <td>{{ user.email }}</td>
                         <td>{{ user.phone ? user.phone : '---' }}</td>
-                        <td>{{ user.oib }}</td>
                         <td>
                             <svg style="width:16px;height:16px" viewBox="0 0 24 24" class="txt-green" v-if="user.admin_role">
                                 <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />

@@ -29,7 +29,9 @@ class FamilyFarmReportsController extends Controller
         }])
         ->with('processAmounts', function ($query){
             return $query->with('amount', function ($query){
-                return $query->with('familyFarmSupply');
+                return $query->with('familyFarmSupply', function ($query){
+                    return $query->with('supply');
+                });
             });
         })
         ->whereHas('operation', function ($query) use ($request) {

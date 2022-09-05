@@ -36,21 +36,6 @@
             </div>
             <div class="form-section row">
                 <div class="form-control">
-                    <label for="oib" class="required">OIB:</label>
-                </div>
-                <div class="form-control w-7">
-                    <div class="field">
-                        <input type="text"
-                               class="green"
-                               :class="{'invalid' : errors && errors.oib}"
-                               id="oib"
-                               v-model="formData.oib">
-                    </div>
-                    <div class="error" v-if="errors && errors.oib && errors.oib[0]">{{errors.oib[0]}}</div>
-                </div>
-            </div>
-            <div class="form-section row">
-                <div class="form-control">
                     <label for="username" class="required">Korisničko ime:</label>
                 </div>
                 <div class="form-control w-7">
@@ -66,7 +51,7 @@
             </div>
             <div class="form-section row">
                 <div class="form-control">
-                    <label for="email">Adresa e-pošte:</label>
+                    <label for="email" class="required">Adresa e-pošte:</label>
                 </div>
                 <div class="form-control w-7">
                     <div class="field">
@@ -117,7 +102,6 @@ export default {
                 firstname: null,
                 lastname: null,
                 username: null,
-                oib: null,
                 email: null,
                 phone: null,
             },
@@ -147,7 +131,6 @@ export default {
         this.formData.firstname = this.user.firstname;
         this.formData.lastname = this.user.lastname;
         this.formData.username = this.user.username;
-        this.formData.oib = this.user.oib;
         this.formData.email = this.user.email;
         this.formData.phone = this.user.phone;
         this.loading = false;

@@ -29,4 +29,9 @@ class Supply extends Model
             'culture_id')
             ->withPivot(Schema::getColumnListing('supply_cultures'));
     }
+
+    public function familyFarms()
+    {
+        return $this->belongsToMany(FamilyFarm::class, 'family_farm_supplies');
+    }
 }

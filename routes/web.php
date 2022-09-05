@@ -47,6 +47,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/new-family-farm', function (){
+    return view('new_family_farm');
+});
+Route::post('/new-family-farm', function (Request $request){
+    $request->validate([
+        'name'  => 'required',
+        'email' => 'nullable|required_without_all:phone,""|email',
+        'phone' => 'nullable|required_without_all:email,""',
+    ]);
+    $details = [
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone' => $request->phone,
+    ];
+    \Illuminate\Support\Facades\Mail::to('karlo.stjepanovic3@gmail.com')->send(new \App\Mail\NewFamilyFarmMail($details));
+    if(\Illuminate\Support\Facades\Mail::failures()){
+        return back()->with('error', 'Dogodila se greška.');
+    }
+    return back()->with('success', 'Upit je uspješno poslan! Očekujte odgovor u najkraćem mogućem roku.');
+});
 Route::group(['middleware' => ['auth']], function () {
     Route::get('{any}', function () {
         return view('vue');
@@ -63,24 +83,24 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/logged-user', function () {
         return Auth::user();
     });
-    Route::post('/search-user/oib', function (Request $request){
+    Route::post('/search-user/username', function (Request $request){
         $request->validate([
-            'oib' => 'required',
+            'username' => 'required',
         ]);
-        return User::where('oib', '=', $request->oib)->get()->first();
+        return User::where('username', '=', $request->username)->get()->first();
     });
 
     // OPG
     Route::post('/set-family-farm/{id}', [FamilyFarmController::class, 'setFamilyFarm']);
     Route::post('/family-farm', function () {
-        return FamilyFarm::where('id', '=', session('familyFarm')['id'])->get()->first();
+        return FamilyFarm::where('id', '=', session('familyFarm') ? session('familyFarm')['id'] : null)->get()->first();
     });
     Route::post('/get-available-family-farms', [FamilyFarmController::class, 'getAvailableFamilyFarms']);
 
     // MATRICA
     Route::post('/set-matrix/{id}', [MatrixController::class, 'setMatrix']);
     Route::post('/matrix', function () {
-        return Matrix::where('id', '=', session('matrix')['id'])->get()->first();
+        return Matrix::where('id', '=', session('matrix') ? session('matrix')['id'] : null)->get()->first();
     });
     Route::post('/get-available-matrices', [MatrixController::class, 'getAvailableMatrices']);
 
@@ -150,7 +170,9 @@ Route::group(['middleware' => ['auth']], function () {
                     ->with('processes', function ($query){
                         return $query->with('processAmounts', function ($query){
                             return $query->with('amount', function ($query){
-                                return $query->with('familyFarmSupply');
+                                return $query->with('familyFarmSupply', function ($query){
+                                    return $query->with('supply');
+                                });
                             });
                         });
                     })
@@ -209,13 +231,13 @@ Route::group(['middleware' => ['auth']], function () {
 
         // SREDSTVA I ZALIHE
         Route::post('get-supplies', function () {
-            return FamilyFarm::find(session('familyFarm')['id'])->supplies()->get()->toArray();
+            return FamilyFarm::find(session('familyFarm')['id'])->familyFarmSupplies()->get()->toArray();
         });
         Route::post('add-supply', [FamilyFarmSupplyController::class, 'addSupply']);
         Route::post('remove-supply/{id}', [FamilyFarmSupplyController::class, 'removeSupply']);
         Route::group(["prefix" => "supply"], function() {
             Route::post('{id}/show', function ($id) {
-                return FamilyFarmSupply::where('id', $id)->where('family_farm_id', session('familyFarm')['id'])->with('amounts')->get()->first();
+                return FamilyFarmSupply::where('id', $id)->where('family_farm_id', session('familyFarm')['id'])->with('supply', 'amounts')->get()->first();
             });
             Route::post('{id}/get-amounts', function ($id) {
                 return FamilyFarmSupply::find($id)->amounts()->orderBy('created_at', 'desc')->get()->toArray();

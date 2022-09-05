@@ -16,7 +16,6 @@ class User extends Authenticatable
         'lastname',
         'username',
         'password',
-        'oib',
         'email',
         'phone',
         'otp_token',
@@ -31,7 +30,8 @@ class User extends Authenticatable
         return $this->firstname." ".$this->lastname;
     }
     public function getFamilyFarmAdminRoleAttribute() {
-        return $this->familyFarms()->where('family_farm_id', '=', session('familyFarm')['id'])->first()['pivot']['admin_role'];
+        $familyFarm = $this->familyFarms()->where('family_farm_id', '=', session('familyFarm') ? session('familyFarm')['id'] : null)->first();
+        return $familyFarm ? $familyFarm['pivot']['admin_role'] : [];
     }
 
     // korisnik je djelatnik u opg-ovima

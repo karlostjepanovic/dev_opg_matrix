@@ -3,7 +3,6 @@ export class LoggedUser {
     fullName = null;
     firstname = null;
     lastname = null;
-    oib = null;
     phone = null;
     email = null;
     username = null;
@@ -20,7 +19,6 @@ export class LoggedUser {
                 this.firstname = response.data.firstname;
                 this.lastname = response.data.lastname;
                 this.username = response.data.username;
-                this.oib = response.data.oib;
                 this.phone = response.data.phone;
                 this.email = response.data.email;
                 this.adminRole = response.data.admin_role;
@@ -37,7 +35,6 @@ export class LoggedUser {
         this.fullName = null;
         this.firstname = null;
         this.lastname = null;
-        this.oib = null;
         this.phone = null;
         this.email = null;
         this.username = null;

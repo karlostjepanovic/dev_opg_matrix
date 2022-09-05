@@ -2,11 +2,12 @@
     <div class="container">
         <loading-overlay v-show="loading"></loading-overlay>
         <template v-if="!loading">
-            <div class="subtitle">Ostvareni prihodi</div>
-            <div class="message green">U tablici su prikazani svi ostvareni prihodi za operacije koju su označene kao završene.</div>
-            <template v-if="incomes.length > 0">
-                <table>
-                    <thead>
+            <div class="section">
+                <div class="subtitle">Ostvareni prihodi</div>
+                <div class="message green">U tablici su prikazani svi ostvareni prihodi za operacije koju su označene kao završene.</div>
+                <template v-if="incomes.length > 0">
+                    <table>
+                        <thead>
                         <tr>
                             <th>Operacija</th>
                             <th>Cijena</th>
@@ -14,8 +15,8 @@
                             <th>Obrađena količina</th>
                             <th>Ostvareno</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         <tr v-for="income in incomes" :key="income.id" class="hover">
                             <td>{{income.ordinal_number+'. '+income.operation_type}}</td>
                             <td>
@@ -39,12 +40,13 @@
                         </tr>
                         <tr>
                             <td class="txt-right txt-bold" colspan="4">UKUPNO:</td>
-                            <td>{{totalIncom}} HRK</td>
+                            <td>{{totalIncome}} HRK</td>
                         </tr>
-                    </tbody>
-                </table>
-            </template>
-            <div class="txt-bold" v-else>Trenutno ne postoje podatci za prikaz!</div>
+                        </tbody>
+                    </table>
+                </template>
+                <div class="txt-bold" v-else>Trenutno ne postoje podatci za prikaz!</div>
+            </div>
         </template>
     </div>
 </template>
@@ -55,7 +57,7 @@ export default {
     data(){
         return {
             incomes: [],
-            totalIncom: 0,
+            totalIncome: 0,
             loading: true
         }
     },
@@ -63,7 +65,7 @@ export default {
         axios.post("/family-farm/matrix/reports/get-income").then((response) => {
             this.incomes = response.data;
             response.data.forEach(income => {
-               this.totalIncom += Math.round(income.unit_price * income.total_tracking);
+               this.totalIncome += Math.round(income.unit_price * income.total_tracking);
             });
             this.loading = false;
         }).catch(() => {
@@ -82,5 +84,9 @@ export default {
 .container {
     position: relative;
     min-height: 80px;
+}
+
+.section:not(:last-child) {
+    margin-bottom: 20px;
 }
 </style>

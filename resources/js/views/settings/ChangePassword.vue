@@ -53,7 +53,7 @@
                     <div class="form-section center">
                         <button
                             type="submit"
-                            class="green w-10"
+                            class="green"
                             :disabled="loading">
                             Promijeni lozinku
                         </button>

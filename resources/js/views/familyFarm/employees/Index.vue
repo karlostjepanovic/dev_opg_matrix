@@ -14,7 +14,6 @@
                 <th>Korisnik</th>
                 <th>Adresa e-pošte</th>
                 <th>Telefon</th>
-                <th>OIB</th>
                 <th>Administrator<br>OPG-a</th>
                 <th>Posljednja prijava</th>
                 <th></th>
@@ -26,9 +25,8 @@
                     <div class="txt-bold">{{ employee.firstname+' '+employee.lastname }}</div>
                     <div class="txt-small">{{ employee.username }}</div>
                 </td>
-                <td>{{ employee.email ? employee.email : '---' }}</td>
+                <td>{{ employee.email }}</td>
                 <td>{{ employee.phone ? employee.phone : '---' }}</td>
-                <td>{{ employee.oib }}</td>
                 <td>
                     <svg style="width:16px;height:16px" viewBox="0 0 24 24" class="txt-green" v-if="employee.pivot.admin_role">
                         <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
